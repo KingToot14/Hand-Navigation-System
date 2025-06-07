@@ -1,0 +1,26 @@
+ --- Class Breakdown ---
+
+HandPair:
+ - Holds the logic for storing a single "pair of hands" - left and right
+ - This should allow multiple users to be distinctly identified even on the same camera
+ - Given a frame, it attempts to detect hands in an image, passing on the relevant info to the Hand instances
+
+Hand:
+ - Holds the logic for a single hand
+ - Inherited by "HandGesture" and "HandPointer"
+ - Can take in landmark info to calculate new positions
+
+HandGesture:
+ - Holds the logic for the "gesture" hand in the primary navigation system.
+ - Shortcuts, alt, shift, ctrl, etc.
+
+HandPointer:
+ - Holds the logic for the "pointer" hand in the primary navigation system.
+ - Controls the mouse movement, clicks, etc.
+
+
+ --- Flow ---
+Receive Capture => split into sections => find landmarks => pass to hands
+
+ImageManager receives the given capture (or VideoCapture(0) by default) => ImageManager splits the input into
+the required sections => HandDetector attempts to locate hand landmarks and pass them onto their designated pair
