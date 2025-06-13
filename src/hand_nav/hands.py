@@ -18,12 +18,19 @@ class Hand:
             return
         
         # palm points
-        p1 = landmarks[0]
-        p2 = landmarks[5]
-        p3 = landmarks[17]
+        self.p1 = landmarks[0]
+        self.p2 = landmarks[5]
+        self.p3 = landmarks[17]
+        
+        # fingertips
+        self.f1 = landmarks[4]
+        self.f2 = landmarks[8]
+        self.f3 = landmarks[12]
+        self.f4 = landmarks[16]
+        self.f5 = landmarks[20]
         
         # calculate new positiong (avg point)
-        self.position = ((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3)
+        self.position = ((self.p1.x + self.p2.x + self.p3.x) / 3, (self.p1.y + self.p2.y + self.p3.y) / 3)
     
     def draw_hand(self, image) -> cv2.typing.MatLike:
         if not self.landmarks:
@@ -32,12 +39,19 @@ class Hand:
         height, width, _ = image.shape
         
         # palm points
-        image = draw_circle(image, self.landmarks[0].x, self.landmarks[0].y,   (255, 0, 0))
-        image = draw_circle(image, self.landmarks[5].x, self.landmarks[5].y,   (255, 0, 0))
-        image = draw_circle(image, self.landmarks[17].x, self.landmarks[17].y, (255, 0, 0))
+        image = draw_circle(image, self.p1.x, self.p1.y, (255, 0, 0))
+        image = draw_circle(image, self.p2.x, self.p2.y, (255, 0, 0))
+        image = draw_circle(image, self.p3.x, self.p3.y, (255, 0, 0))
         
         # center point
         image = draw_circle(image, self.position[0], self.position[1], (255, 0, 255))
+        
+        # finger tips
+        image = draw_circle(image, self.f1.x, self.f1.y, (0, 255, 0))
+        image = draw_circle(image, self.f2.x, self.f2.y, (0, 255, 0))
+        image = draw_circle(image, self.f3.x, self.f3.y, (0, 255, 0))
+        image = draw_circle(image, self.f4.x, self.f4.y, (0, 255, 0))
+        image = draw_circle(image, self.f5.x, self.f5.y, (0, 255, 0))
         
         return image
 
