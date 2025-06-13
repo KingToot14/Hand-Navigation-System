@@ -22,6 +22,9 @@ class Hand:
         self.p2 = landmarks[5]
         self.p3 = landmarks[17]
         
+        # calculate new position (avg point)
+        self.pos = ((self.p1.x + self.p2.x + self.p3.x) / 3, (self.p1.y + self.p2.y + self.p3.y) / 3)
+        
         # fingertips
         self.f1 = landmarks[4]
         self.f2 = landmarks[8]
@@ -29,14 +32,18 @@ class Hand:
         self.f4 = landmarks[16]
         self.f5 = landmarks[20]
         
-        # calculate new positiong (avg point)
-        self.position = ((self.p1.x + self.p2.x + self.p3.x) / 3, (self.p1.y + self.p2.y + self.p3.y) / 3)
+        # check if fingers are bent
+        threshold = get_sqr_dist(self.pos, [self.p1.x, self.p1.y])
+        
+        self.f1_bent = get_sqr_dist(self.pos, [self.f1.x, self.f1.y]) < threshold
+        self.f2_bent = get_sqr_dist(self.pos, [self.f2.x, self.f2.y]) < threshold
+        self.f3_bent = get_sqr_dist(self.pos, [self.f3.x, self.f3.y]) < threshold
+        self.f4_bent = get_sqr_dist(self.pos, [self.f4.x, self.f4.y]) < threshold
+        self.f5_bent = get_sqr_dist(self.pos, [self.f5.x, self.f5.y]) < threshold
     
     def draw_hand(self, image) -> cv2.typing.MatLike:
         if not self.landmarks:
             return image
-        
-        height, width, _ = image.shape
         
         # palm points
         image = draw_circle(image, self.p1.x, self.p1.y, (255, 0, 0))
@@ -44,14 +51,14 @@ class Hand:
         image = draw_circle(image, self.p3.x, self.p3.y, (255, 0, 0))
         
         # center point
-        image = draw_circle(image, self.position[0], self.position[1], (255, 0, 255))
+        image = draw_circle(image, self.pos[0], self.pos[1], (255, 0, 255))
         
         # finger tips
-        image = draw_circle(image, self.f1.x, self.f1.y, (0, 255, 0))
-        image = draw_circle(image, self.f2.x, self.f2.y, (0, 255, 0))
-        image = draw_circle(image, self.f3.x, self.f3.y, (0, 255, 0))
-        image = draw_circle(image, self.f4.x, self.f4.y, (0, 255, 0))
-        image = draw_circle(image, self.f5.x, self.f5.y, (0, 255, 0))
+        image = draw_circle(image, self.f1.x, self.f1.y, (0, 0, 255) if self.f1_bent else (0, 255, 0))
+        image = draw_circle(image, self.f2.x, self.f2.y, (0, 0, 255) if self.f2_bent else (0, 255, 0))
+        image = draw_circle(image, self.f3.x, self.f3.y, (0, 0, 255) if self.f3_bent else (0, 255, 0))
+        image = draw_circle(image, self.f4.x, self.f4.y, (0, 0, 255) if self.f4_bent else (0, 255, 0))
+        image = draw_circle(image, self.f5.x, self.f5.y, (0, 0, 255) if self.f5_bent else (0, 255, 0))
         
         return image
 
