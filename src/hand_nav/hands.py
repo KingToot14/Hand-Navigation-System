@@ -3,6 +3,8 @@ import cv2
 from mediapipe.tasks.python.vision.hand_landmarker import HandLandmarkerResult
 from mediapipe.tasks.python.components.containers.landmark import NormalizedLandmark
 
+from hand_nav.util import *
+
 class Hand:
     def __init__(self):
         self.position = None
@@ -30,16 +32,12 @@ class Hand:
         height, width, _ = image.shape
         
         # palm points
-        image = cv2.circle(image, (int(width * self.landmarks[0].x), int(height * self.landmarks[0].y)), 7, (0, 0, 0), -1)
-        image = cv2.circle(image, (int(width * self.landmarks[0].x), int(height * self.landmarks[0].y)), 5, (255, 0, 0), -1)
-        image = cv2.circle(image, (int(width * self.landmarks[5].x), int(height * self.landmarks[5].y)), 7, (0, 0, 0), -1)
-        image = cv2.circle(image, (int(width * self.landmarks[5].x), int(height * self.landmarks[5].y)), 5, (255, 0, 0), -1)
-        image = cv2.circle(image, (int(width * self.landmarks[17].x), int(height * self.landmarks[17].y)), 7, (0, 0, 0), -1)
-        image = cv2.circle(image, (int(width * self.landmarks[17].x), int(height * self.landmarks[17].y)), 5, (255, 0, 0), -1)
+        image = draw_circle(image, self.landmarks[0].x, self.landmarks[0].y,   (255, 0, 0))
+        image = draw_circle(image, self.landmarks[5].x, self.landmarks[5].y,   (255, 0, 0))
+        image = draw_circle(image, self.landmarks[17].x, self.landmarks[17].y, (255, 0, 0))
         
         # center point
-        image = cv2.circle(image, (int(width * self.position[0]), int(height * self.position[1])), 7, (0, 0, 0), -1)
-        image = cv2.circle(image, (int(width * self.position[0]), int(height * self.position[1])), 5, (0, 0, 255), -1)
+        image = draw_circle(image, self.position[0], self.position[1], (255, 0, 255))
         
         return image
 
