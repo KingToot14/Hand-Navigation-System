@@ -40,6 +40,20 @@ class Hand:
         self.f3_bent = get_sqr_dist(self.pos, [self.f3.x, self.f3.y]) < threshold
         self.f4_bent = get_sqr_dist(self.pos, [self.f4.x, self.f4.y]) < threshold
         self.f5_bent = get_sqr_dist(self.pos, [self.f5.x, self.f5.y]) < threshold
+        
+        self.interpret_landmarks()
+    
+    def interpret_landmarks(self) -> None:
+        return
+    
+    def test_bent(self, b1: bool, b2: bool, b3: bool, b4: bool, b5: bool) -> bool:
+        return (
+            b1 == self.f1_bent and
+            b2 == self.f2_bent and
+            b3 == self.f3_bent and
+            b4 == self.f4_bent and
+            b5 == self.f5_bent
+        )
     
     def draw_hand(self, image) -> cv2.typing.MatLike:
         if not self.landmarks:
