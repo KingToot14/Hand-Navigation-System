@@ -7,14 +7,14 @@ from hand_nav.util import *
 
 class Hand:
     def __init__(self):
-        self.position = None
+        self.pos = None
         self.landmarks = []
     
     def update_landmarks(self, landmarks: list[NormalizedLandmark]) -> None:
         self.landmarks = landmarks
         
         if not landmarks:
-            self.position = None
+            self.pos = None
             return
         
         # palm points
@@ -65,7 +65,8 @@ class Hand:
         image = draw_circle(image, self.p3.x, self.p3.y, (255, 0, 0))
         
         # center point
-        image = draw_circle(image, self.pos[0], self.pos[1], (255, 0, 255))
+        if self.pos:
+            image = draw_circle(image, self.pos[0], self.pos[1], (255, 0, 255))
         
         # finger tips
         image = draw_circle(image, self.f1.x, self.f1.y, (0, 0, 255) if self.f1_bent else (0, 255, 0))
