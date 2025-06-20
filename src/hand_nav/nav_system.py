@@ -27,7 +27,10 @@ class HandPointer(Hand):
         self.last_pos: tuple[float, float] = (0, 0)
         
         # speed per 10% of capture distance
-        self.move_speed: float = 200
+        self.move_speed: float = 400
+        
+        self.dead_x: float = 0.0
+        self.dead_y: float = 0.0
     
     def interpret_landmarks(self) -> None:
         # handle mouse position
@@ -67,9 +70,21 @@ class HandPointer(Hand):
         dx = -(self.pos[0] - self.last_pos[0])
         dy = self.pos[1] - self.last_pos[1]
         
+        # deadzone
+        if abs(dx) < self.dead_x:
+            dx = 0
+        if abs(dy) < self.dead_y:
+            dy = 0
+        
+        # adjust sensitivity based on distance
+        
+        
         self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
         
-        self.last_pos = self.pos
+        self.last_pos = (
+            self.pos[0] if dx != 0 else self.last_pos[0],
+            self.pos[1] if dy != 0 else self.last_pos[1]
+        )
 
 #endregion
 
@@ -81,8 +96,8 @@ class PointerState:
         self.keyboard: KeyController = keyboard
         
         # delay between switching states
-        self.enter_delay: float = 0.15
-        self.exit_delay: float = 0.15
+        self.enter_delay: float = 0.05
+        self.exit_delay: float = 0.05
         
         self.exit_time: float = 0.0
         self.exiting: bool = False
