@@ -25,16 +25,10 @@ class HandPointer(Hand):
         self.state: PointerState = NoneState(self, self.mouse, self.keyboard)
         
         self.last_pos: tuple[float, float] = (0, 0)
-        
-        # speed per 10% of capture distance
-        self.move_speed: float = 400
-        
-        self.dead_x: float = 0.0
-        self.dead_y: float = 0.0
     
     def interpret_landmarks(self) -> None:
         # handle mouse position
-        self.update_mouse_position()
+        self.state.update_mouse_position()
         
         # pass landmarks to states
         self.state.handle_landmarks()
@@ -60,36 +54,6 @@ class HandPointer(Hand):
         self.state = state
         
         self.state.enter_state()
-    
-    def update_mouse_position(self) -> None:
-        if not self.last_pos:
-            self.last_pos = self.pos
-            return
-        
-        # move the mouse cursor (x is flipped)
-        dx = -(self.pos[0] - self.last_pos[0])
-        dy = self.pos[1] - self.last_pos[1]
-        
-        # deadzone
-        if abs(dx) < self.dead_x:
-            dx = 0
-        if abs(dy) < self.dead_y:
-            dy = 0
-        
-        # adjust sensitivity based on distance
-        min_bend = min(self.f1_bend_dist, self.f2_bend_dist, self.f3_bend_dist, self.f4_bend_dist, self.f5_bend_dist)
-        diff = max(min((min_bend - self.threshold) / self.threshold, 1.0), 0.0)
-        
-        dx *= diff
-        dy *= diff
-        
-        # move mouse
-        self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
-        
-        self.last_pos = (
-            self.pos[0] if dx != 0 else self.last_pos[0],
-            self.pos[1] if dy != 0 else self.last_pos[1]
-        )
 
 #endregion
 
@@ -106,6 +70,12 @@ class PointerState:
         
         self.exit_time: float = 0.0
         self.exiting: bool = False
+                
+        # speed per 10% of capture distance
+        self.move_speed: float = 400
+        
+        self.dead_x: float = 0.0
+        self.dead_y: float = 0.0
         
         self.initialize()
     
@@ -126,6 +96,42 @@ class PointerState:
         if time.time() - self.exit_time >= self.exit_delay:
             self.exit_state()
             self.hand.change_state(NoneState(self.hand, self.mouse, self.keyboard))
+    
+    def get_position_change(self, position: tuple[float, float]) -> tuple[float, float]:
+        if not self.hand.last_pos:
+            self.hand.last_pos = self.hand.pos
+            return
+        
+        # move the mouse cursor (x is flipped)
+        dx = -(position[0] - self.hand.last_pos[0])
+        dy = position[1] - self.hand.last_pos[1]
+        
+        # deadzone
+        if abs(dx) < self.dead_x:
+            dx = 0
+        if abs(dy) < self.dead_y:
+            dy = 0
+        
+        return (dx, dy)
+    
+    def update_mouse_position(self) -> None:
+        dx, dy = self.get_position_change(self.hand.pos)
+        
+        # adjust sensitivity based on distance
+        min_bend = min(self.hand.f1_bend_dist, self.hand.f2_bend_dist, self.hand.f3_bend_dist, 
+                       self.hand.f4_bend_dist, self.hand.f5_bend_dist)
+        diff = max(min((min_bend - self.hand.threshold) / self.hand.threshold, 1.0), 0.0)
+        
+        dx *= diff
+        dy *= diff
+        
+        # move mouse
+        self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
+        
+        self.hand.last_pos = (
+            self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
+            self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
+        )
     
     def handle_landmarks(self) -> None:
         pass
@@ -170,6 +176,34 @@ class NoneState(PointerState):
             self.state = 'none'
 
 class LeftClickState(PointerState):
+    def initialize(self):
+        self.origin = self.hand.pos
+        self.lock_x = 0.01
+        self.lock_y = 0.01
+        
+        self.locked = True
+    
+    def update_mouse_position(self):
+        if not self.origin:
+            return
+        
+        # attempt to unlock (enter drag mode)
+        if self.locked:
+            dx, dy = self.get_position_change(self.origin)
+
+            if dx >= self.lock_x or dy >= self.lock_y:
+                self.locked = False
+        else:
+            dx, dy = self.get_position_change(self.hand.pos)
+            
+            # move mouse
+            self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
+        
+        self.hand.last_pos = (
+            self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
+            self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
+        )
+    
     def handle_landmarks(self):
         self.check_exit()
     
@@ -183,6 +217,34 @@ class LeftClickState(PointerState):
         self.mouse.release(Button.left)
 
 class RightClickState(PointerState):
+    def initialize(self):
+        self.origin = self.hand.pos
+        self.lock_x = 0.01
+        self.lock_y = 0.01
+        
+        self.locked = True
+    
+    def update_mouse_position(self):
+        if not self.origin:
+            return
+        
+        # attempt to unlock (enter drag mode)
+        if self.locked:
+            dx, dy = self.get_position_change(self.origin)
+
+            if dx >= self.lock_x or dy >= self.lock_y:
+                self.locked = False
+        else:
+            dx, dy = self.get_position_change(self.hand.pos)
+            
+            # move mouse
+            self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
+        
+        self.hand.last_pos = (
+            self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
+            self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
+        )
+    
     def handle_landmarks(self):
         self.check_exit()
     
