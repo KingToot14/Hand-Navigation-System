@@ -1,3 +1,5 @@
+import time
+
 import cv2
 
 from hand_nav.hands import Hand
@@ -18,31 +20,26 @@ class HandPointer(Hand):
     def __init__(self):
         super().__init__()
         
-        self.state = None
-        self.mouse = MouseController()
-        self.keyboard = KeyController()
+        self.mouse: MouseController = MouseController()
+        self.keyboard: KeyController = KeyController()
+        self.state: PointerState = NoneState(self, self.mouse, self.keyboard)
         
-        self.last_pos = (0, 0)
+        self.last_pos: tuple[float, float] = (0, 0)
         
         # speed per 10% of capture distance
-        self.move_speed = 200
+        self.move_speed: float = 200
     
     def interpret_landmarks(self) -> None:
         # handle mouse position
         self.update_mouse_position()
         
         # pass landmarks to states
-        if self.test_bent(True, True, True, True, True):
-            self.change_state(LeftClickState)
-        elif self.test_bent(False, True, True, True, True):
-            self.change_state(RightClickState)
-        else:
-            self.change_state(None)
+        self.state.handle_landmarks()
     
     def draw_hand(self, image):
         image = super().draw_hand(image)
         
-        state = "None"
+        state: str = "None"
         
         if isinstance(self.state, LeftClickState):
             state = "Left Click"
@@ -56,21 +53,9 @@ class HandPointer(Hand):
         
         return image
     
-    def change_state(self, state: type) -> None:
-        if not state:
-            if self.state:
-                self.state.exit_state()
-            self.state = None
-            return
+    def change_state(self, state) -> None:
+        self.state = state
         
-        if isinstance(self.state, state):
-            return
-        
-        # exit current state if set
-        if self.state:
-            self.state.exit_state()
-        
-        self.state = state(self.mouse, self.keyboard)
         self.state.enter_state()
     
     def update_mouse_position(self) -> None:
@@ -89,10 +74,44 @@ class HandPointer(Hand):
 #endregion
 
 #region Pointer States
-class State:
-    def __init__(self, mouse: MouseController = None, keyboard: KeyController = None):
-        self.mouse = mouse
-        self.keyboard = keyboard
+class PointerState:
+    def __init__(self, hand: HandPointer, mouse: MouseController, keyboard: KeyController):
+        self.hand: HandPointer = hand
+        self.mouse: MouseController = mouse
+        self.keyboard: KeyController = keyboard
+        
+        # delay between switching states
+        self.enter_delay: float = 0.15
+        self.exit_delay: float = 0.15
+        
+        self.exit_time: float = 0.0
+        self.exiting: bool = False
+        
+        self.initialize()
+    
+    def initialize(self) -> None:
+        return
+    
+    def check_exit(self) -> None:
+        if self.conditions_met():
+            self.exiting = False
+            return
+        
+        # if just started exiting, start a timer
+        if not self.exiting:
+            self.exit_time = time.time()
+            self.exiting = True
+        
+        # if enough time has passed, exit state
+        if time.time() - self.exit_time >= self.exit_delay:
+            self.exit_state()
+            self.hand.change_state(NoneState(self.hand, self.mouse, self.keyboard))
+    
+    def handle_landmarks(self) -> None:
+        pass
+    
+    def conditions_met(self) -> bool:
+        return True
     
     def enter_state(self) -> None:
         return
@@ -100,18 +119,60 @@ class State:
     def exit_state(self) -> None:
         return
 
-class LeftClickState(State):
-    def enter_state(self) -> None:
+class NoneState(PointerState):
+    def initialize(self):
+        self.states: dict[str, PointerState] = {
+            'left_click': LeftClickState(self.hand, self.mouse, self.keyboard),
+            'right_click': RightClickState(self.hand, self.mouse, self.keyboard),
+        }
+        
+        self.curr_state = 'none'
+        self.curr_time = 0
+    
+    def handle_landmarks(self) -> None:
+        valid_state = False
+        
+        # check for a new state to switch to
+        for state in self.states:
+            if not self.states[state].conditions_met():
+                continue
+            
+            valid_state = True
+            
+            if self.curr_state != state:
+                self.curr_state = state
+                self.curr_time = time.time()
+            else:
+                if time.time() - self.curr_time >= self.states[state].enter_delay:
+                    self.hand.change_state(self.states[state])
+        
+        if not valid_state:
+            self.state = 'none'
+
+class LeftClickState(PointerState):
+    def handle_landmarks(self):
+        self.check_exit()
+    
+    def conditions_met(self):
+        return self.hand.test_bent(True, True, True, True, True)
+    
+    def enter_state(self):
         self.mouse.press(Button.left)
-
-    def exit_state(self) -> None:
+    
+    def exit_state(self):
         self.mouse.release(Button.left)
 
-class RightClickState(State):
-    def enter_state(self) -> None:
+class RightClickState(PointerState):
+    def handle_landmarks(self):
+        self.check_exit()
+    
+    def conditions_met(self):
+        return self.hand.test_bent(False, True, True, True, True)
+    
+    def enter_state(self):
         self.mouse.press(Button.right)
-
-    def exit_state(self) -> None:
+    
+    def exit_state(self):
         self.mouse.release(Button.right)
 
 #endregion

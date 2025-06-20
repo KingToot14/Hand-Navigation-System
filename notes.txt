@@ -24,3 +24,16 @@ Receive Capture => split into sections => find landmarks => pass to hands
 
 ImageManager receives the given capture (or VideoCapture(0) by default) => ImageManager splits the input into
 the required sections => HandDetector attempts to locate hand landmarks and pass them onto their designated pair
+
+
+ --- States ---
+Right now, the transistion of states is extremely jumpy and buggy. It's hard to hold a constant left or right click due to how we detect fingers and how we transistion between states. Currently, we just look for certain fingers being bent.
+
+Changes:
+ - States should be in charge of handling when they enter/exit. When no state is active (NoneState), all states get an opportunity to gain control of the pointer hand.
+ - States should require their "activate condition" to be met for a certain amount of time to prevent rapid jumps between states.
+ - States should typically only be entered when in NoneState
+
+
+ --- Smoothness ---
+Additionally, the mouse movement is extremely jumpy. I think adding some kind of smoothing function or deadzone should help with this. The former would stabalize the mouse movement from one point to another. The latter would define an area around the current position where no mouse movement can occur. Playing around with these methods (an others) may allow for a much smoother experience.
