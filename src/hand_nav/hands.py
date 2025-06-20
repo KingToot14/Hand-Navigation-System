@@ -35,11 +35,19 @@ class Hand:
         # check if fingers are bent
         threshold = get_sqr_dist(self.pos, [self.p1.x, self.p1.y])
         
-        self.f1_bent = get_sqr_dist(self.pos, [self.f1.x, self.f1.y]) < threshold
-        self.f2_bent = get_sqr_dist(self.pos, [self.f2.x, self.f2.y]) < threshold
-        self.f3_bent = get_sqr_dist(self.pos, [self.f3.x, self.f3.y]) < threshold
-        self.f4_bent = get_sqr_dist(self.pos, [self.f4.x, self.f4.y]) < threshold
-        self.f5_bent = get_sqr_dist(self.pos, [self.f5.x, self.f5.y]) < threshold
+        threshold_weights = [
+            1.25,
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+        ]
+        
+        self.f1_bent = get_sqr_dist(self.pos, [self.f1.x, self.f1.y]) < threshold * threshold_weights[0]
+        self.f2_bent = get_sqr_dist(self.pos, [self.f2.x, self.f2.y]) < threshold * threshold_weights[1]
+        self.f3_bent = get_sqr_dist(self.pos, [self.f3.x, self.f3.y]) < threshold * threshold_weights[2]
+        self.f4_bent = get_sqr_dist(self.pos, [self.f4.x, self.f4.y]) < threshold * threshold_weights[3]
+        self.f5_bent = get_sqr_dist(self.pos, [self.f5.x, self.f5.y]) < threshold * threshold_weights[4]
         
         self.interpret_landmarks()
     
