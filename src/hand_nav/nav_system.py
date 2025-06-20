@@ -77,8 +77,13 @@ class HandPointer(Hand):
             dy = 0
         
         # adjust sensitivity based on distance
+        min_bend = min(self.f1_bend_dist, self.f2_bend_dist, self.f3_bend_dist, self.f4_bend_dist, self.f5_bend_dist)
+        diff = max(min((min_bend - self.threshold) / self.threshold, 1.0), 0.0)
         
+        dx *= diff
+        dy *= diff
         
+        # move mouse
         self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
         
         self.last_pos = (
