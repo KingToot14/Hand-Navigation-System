@@ -1,6 +1,7 @@
 import time
 
 import cv2
+import tkinter
 
 from hand_nav.hands import Hand
 
@@ -25,6 +26,10 @@ class HandPointer(Hand):
         self.state: PointerState = NoneState(self, self.mouse, self.keyboard)
         
         self.last_pos: tuple[float, float] = (0, 0)
+        
+        root = tkinter.Tk()
+        self.screen_x = root.winfo_screenwidth()
+        self.screen_y = root.winfo_screenheight()
     
     def interpret_landmarks(self) -> None:
         # handle mouse position
@@ -134,7 +139,7 @@ class PointerState:
         )
     
     def handle_landmarks(self) -> None:
-        pass
+        self.check_exit()
     
     def conditions_met(self) -> bool:
         return True
@@ -150,6 +155,7 @@ class NoneState(PointerState):
         self.states: dict[str, PointerState] = {
             'left_click': LeftClickState(self.hand, self.mouse, self.keyboard),
             'right_click': RightClickState(self.hand, self.mouse, self.keyboard),
+            'center': CenterState(self.hand, self.mouse, self.keyboard)
         }
         
         self.curr_state = 'none'
@@ -256,5 +262,12 @@ class RightClickState(PointerState):
     
     def exit_state(self):
         self.mouse.release(Button.right)
+
+class CenterState(PointerState):
+    def update_mouse_position(self):
+        self.mouse.position = (self.hand.screen_x / 2.0, self.hand.screen_y / 2.0)
+    
+    def conditions_met(self):
+        return self.hand.test_bent(True, False, True, True, False)
 
 #endregion
