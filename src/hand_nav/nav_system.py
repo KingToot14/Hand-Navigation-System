@@ -155,7 +155,7 @@ class NoneState(PointerState):
         self.states: dict[str, PointerState] = {
             'left_click': LeftClickState(self.hand, self.mouse, self.keyboard),
             'right_click': RightClickState(self.hand, self.mouse, self.keyboard),
-            'center': CenterState(self.hand, self.mouse, self.keyboard)
+            'center': CenterState(self.hand, self.mouse, self.keyboard),
         }
         
         self.curr_state = 'none'
@@ -210,11 +210,8 @@ class LeftClickState(PointerState):
             self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
         )
     
-    def handle_landmarks(self):
-        self.check_exit()
-    
     def conditions_met(self):
-        return self.hand.test_bent(True, True, True, True, True)
+        return self.hand.test_bent(False, True, False, False, False)
     
     def enter_state(self):
         self.mouse.press(Button.left)
@@ -223,44 +220,14 @@ class LeftClickState(PointerState):
         self.mouse.release(Button.left)
 
 class RightClickState(PointerState):
-    def initialize(self):
-        self.origin = self.hand.pos
-        self.lock_x = 0.01
-        self.lock_y = 0.01
-        
-        self.locked = True
-    
-    def update_mouse_position(self):
-        if not self.origin:
-            return
-        
-        # attempt to unlock (enter drag mode)
-        if self.locked:
-            dx, dy = self.get_position_change(self.origin)
-
-            if dx >= self.lock_x or dy >= self.lock_y:
-                self.locked = False
-        else:
-            dx, dy = self.get_position_change(self.hand.pos)
-            
-            # move mouse
-            self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
-        
-        self.hand.last_pos = (
-            self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
-            self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
-        )
-    
     def handle_landmarks(self):
         self.check_exit()
     
     def conditions_met(self):
-        return self.hand.test_bent(False, True, True, True, True)
+        return self.hand.test_bent(True, False, False, False, False)
     
     def enter_state(self):
         self.mouse.press(Button.right)
-    
-    def exit_state(self):
         self.mouse.release(Button.right)
 
 class CenterState(PointerState):

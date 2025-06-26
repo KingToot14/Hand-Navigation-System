@@ -4,7 +4,6 @@ from hand_nav.nav_system import HandPointer
 
 if __name__ == "__main__":
     cam_manager = CameraManager(
-        show_capture=True,
         pair=HandPair(
             Hand(),
             HandPointer()
