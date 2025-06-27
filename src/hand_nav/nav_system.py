@@ -3,26 +3,67 @@ import time
 import cv2
 import tkinter
 
-from hand_nav.hands import Hand, BendState
+from hand_nav.camera_manager import CameraManager
+from hand_nav.hands import Hand, HandPair, BendState
 
 from pynput.keyboard import Key, Controller as KeyController, Listener as KeyListener
 from pynput.mouse import Button, Controller as MouseController
 
 class StandardNavSystem:
     def __init__(self):
-        pass
+        keyboard = KeyController()
+        mouse = MouseController()
+        
+        cam_manager = CameraManager(
+            pair=HandPair(
+                HandGesture(keyboard),
+                HandPointer(keyboard, mouse)
+            )
+        )
+        
+        cam_manager.start_capture()
 
 #region Standard Hands
 class HandGesture(Hand):
-    def __init__(self):
-        pass
+    def __init__(self, keyboard: KeyController = None):
+        self.keyboard = keyboard if keyboard else KeyController()
+        
+        self.is_bent = [False, False, False]
+
+    def interpret_landmarks(self):
+        # check shift
+        if self.f1_bent:
+            self.is_bent[0] = True
+            self.keyboard.press(Key.shift)
+            
+        elif self.is_bent[0]:
+            self.is_bent[0] = False
+            self.keyboard.release(Key.shift)
+        
+        # check ctrl
+        if self.f2_bent:
+            self.is_bent[1] = True
+            self.keyboard.press(Key.ctrl)
+            
+        elif self.is_bent[1]:
+            self.is_bent[1] = False
+            self.keyboard.release(Key.ctrl)
+        
+        # check alt
+        if self.f3_bent:
+            self.is_bent[2] = True
+            self.keyboard.press(Key.alt)
+            
+        elif self.is_bent[2]:
+            self.is_bent[2] = False
+            self.keyboard.release(Key.alt)
 
 class HandPointer(Hand):
-    def __init__(self):
+    def __init__(self, keyboard: KeyController = None, mouse: MouseController = None):
         super().__init__()
         
-        self.mouse: MouseController = MouseController()
-        self.keyboard: KeyController = KeyController()
+        self.mouse: MouseController = mouse if mouse else MouseController()
+        self.keyboard: KeyController = keyboard if keyboard else KeyController()
         self.state: PointerState = NoneState(self, self.mouse, self.keyboard)
         
         self.last_pos: tuple[float, float] = (0, 0)
