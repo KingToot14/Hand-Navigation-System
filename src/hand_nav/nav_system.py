@@ -33,27 +33,27 @@ class HandGesture(Hand):
     def interpret_landmarks(self):
         # check shift
         if self.f1_bent:
-            self.is_bent[0] = True
-            self.keyboard.press(Key.shift)
-            
+            if not self.is_bent[0]:
+                self.is_bent[0] = True
+                self.keyboard.press(Key.shift)
         elif self.is_bent[0]:
             self.is_bent[0] = False
             self.keyboard.release(Key.shift)
         
         # check ctrl
         if self.f2_bent:
-            self.is_bent[1] = True
-            self.keyboard.press(Key.ctrl)
-            
+            if not self.is_bent[1]:
+                self.is_bent[1] = True
+                self.keyboard.press(Key.ctrl)
         elif self.is_bent[1]:
             self.is_bent[1] = False
             self.keyboard.release(Key.ctrl)
         
         # check alt
         if self.f3_bent:
-            self.is_bent[2] = True
-            self.keyboard.press(Key.alt)
-            
+            if not self.is_bent[2]:
+                self.is_bent[2] = True
+                self.keyboard.press(Key.alt)
         elif self.is_bent[2]:
             self.is_bent[2] = False
             self.keyboard.release(Key.alt)
