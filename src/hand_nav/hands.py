@@ -1,9 +1,16 @@
+import enum
+
 import cv2
 
 from mediapipe.tasks.python.vision.hand_landmarker import HandLandmarkerResult
 from mediapipe.tasks.python.components.containers.landmark import NormalizedLandmark
 
 from hand_nav.util import *
+
+class BendState(enum.IntEnum):
+    EXTEND = 0
+    BENT = 1
+    IGNORE = 2
 
 class Hand:
     def __init__(self):
@@ -60,13 +67,13 @@ class Hand:
     def interpret_landmarks(self) -> None:
         return
     
-    def test_bent(self, b1: bool, b2: bool, b3: bool, b4: bool, b5: bool) -> bool:
+    def test_bent(self, b1: BendState, b2: BendState, b3: BendState, b4: BendState, b5: BendState) -> bool:
         return (
-            b1 == self.f1_bent and
-            b2 == self.f2_bent and
-            b3 == self.f3_bent and
-            b4 == self.f4_bent and
-            b5 == self.f5_bent
+            (int(b1) == int(self.f1_bent) or b1 == BendState.IGNORE) and
+            (int(b2) == int(self.f2_bent) or b2 == BendState.IGNORE) and
+            (int(b3) == int(self.f3_bent) or b3 == BendState.IGNORE) and
+            (int(b4) == int(self.f4_bent) or b4 == BendState.IGNORE) and
+            (int(b5) == int(self.f5_bent) or b5 == BendState.IGNORE)
         )
     
     def draw_hand(self, image) -> cv2.typing.MatLike:

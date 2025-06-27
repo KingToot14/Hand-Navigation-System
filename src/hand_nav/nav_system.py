@@ -3,7 +3,7 @@ import time
 import cv2
 import tkinter
 
-from hand_nav.hands import Hand
+from hand_nav.hands import Hand, BendState
 
 from pynput.keyboard import Key, Controller as KeyController, Listener as KeyListener
 from pynput.mouse import Button, Controller as MouseController
@@ -75,6 +75,8 @@ class PointerState:
         
         self.exit_time: float = 0.0
         self.exiting: bool = False
+        
+        self.bend_influence: float = 0.25
                 
         # speed per 10% of capture distance
         self.move_speed: float = 400
@@ -123,12 +125,18 @@ class PointerState:
         dx, dy = self.get_position_change(self.hand.pos)
         
         # adjust sensitivity based on distance
-        min_bend = min(self.hand.f1_bend_dist, self.hand.f2_bend_dist, self.hand.f3_bend_dist, 
-                       self.hand.f4_bend_dist, self.hand.f5_bend_dist)
-        diff = max(min((min_bend - self.hand.threshold) / self.hand.threshold, 1.0), 0.0)
+        if self.bend_influence == -1.0:
+            min_bend = min(self.hand.f1_bend_dist, self.hand.f2_bend_dist, self.hand.f3_bend_dist, 
+                        self.hand.f4_bend_dist, self.hand.f5_bend_dist)
+            diff = max(min((min_bend - self.hand.threshold) / self.hand.threshold, 1.0), 0.0)
+            
+            dx *= diff
+            dy *= diff
         
-        dx *= diff
-        dy *= diff
+        # adjust sensitivity if pinky is bent
+        if self.hand.f5_bent:
+            dx *= self.bend_influence
+            dy *= self.bend_influence
         
         # move mouse
         self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
@@ -211,7 +219,7 @@ class LeftClickState(PointerState):
         )
     
     def conditions_met(self):
-        return self.hand.test_bent(False, True, False, False, False)
+        return self.hand.test_bent(BendState.EXTEND, BendState.BENT, BendState.EXTEND, BendState.EXTEND, BendState.IGNORE)
     
     def enter_state(self):
         self.mouse.press(Button.left)
@@ -224,7 +232,7 @@ class RightClickState(PointerState):
         self.check_exit()
     
     def conditions_met(self):
-        return self.hand.test_bent(True, False, False, False, False)
+        return self.hand.test_bent(BendState.BENT, BendState.EXTEND, BendState.EXTEND, BendState.EXTEND, BendState.IGNORE)
     
     def enter_state(self):
         self.mouse.press(Button.right)
@@ -235,6 +243,6 @@ class CenterState(PointerState):
         self.mouse.position = (self.hand.screen_x / 2.0, self.hand.screen_y / 2.0)
     
     def conditions_met(self):
-        return self.hand.test_bent(True, False, True, True, False)
+        return self.hand.test_bent(BendState.BENT, BendState.EXTEND, BendState.BENT, BendState.BENT, BendState.IGNORE)
 
 #endregion
