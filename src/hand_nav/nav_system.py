@@ -18,7 +18,7 @@ class StandardNavSystem:
             pair=HandPair(
                 HandGesture(keyboard),
                 HandPointer(keyboard, mouse)
-            )
+            ),
         )
         
         cam_manager.start_capture()

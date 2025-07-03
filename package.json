@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@babel/plugin-syntax-jsx": "^7.27.1",
+    "@babel/plugin-transform-react-jsx": "^7.27.1",
+    "jsx-render": "^1.1.1",
+    "typescript": "^5.8.3"
+  }
+}

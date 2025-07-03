@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Hand Nav</title>
+        <link rel='stylesheet' href='style.css'/>
+        <script src="script.js"></script>
+        <link rel="icon" type="image/x-icon" href='images/icon.svg'>
+    </head>
+
+    <body>
+        <!-- Header -->
+        <div id='header'>
+            <img src='images/icon.svg' alt='icon'>
+            <span>Hand Nav</span>
+
+            <div id='nav-bar'>
+                <span onclick="show_panel('general')">General</span>
+                <span onclick="show_panel('navigation')">Navigation</span>
+                <span onclick="show_panel('gamepad')">Gamepad</span>
+            </div>
+        </div>
+
+        <div id='body'>
+            <!-- General -->
+            <div id='general' style="display: block;">
+                <h1>General</h1>
+                
+                
+            </div>
+            
+            <!-- Standard Navigation -->
+            <div id='navigation' style="display: none;">
+                <h1>Navigation</h1>
+                
+                
+            </div>
+            
+            <!-- Gamepad -->
+            <div id='gamepad' style="display: none;">
+                <h1>Gamepad</h1>
+                
+                
+            </div>
+        </div>
+    </body>
+</html>
