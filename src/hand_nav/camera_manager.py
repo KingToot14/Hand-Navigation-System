@@ -9,6 +9,8 @@ from hand_nav.hands import HandPair
 
 class CameraManager:
     def __init__(self, detector = None, show_capture: bool = False, pair: HandPair = None):
+        self.running: bool = True
+        
         # detector
         self.detector = detector
         if not self.detector:
@@ -32,7 +34,7 @@ class CameraManager:
         if not cap:
             cap = cv2.VideoCapture(0)
 
-        while True:
+        while self.running:
             ret, frame = cap.read()
             
             if not ret:
@@ -56,3 +58,6 @@ class CameraManager:
         image = mp.Image(image_format=mp.ImageFormat.SRGB, data=frame)
         
         return self.detector.detect(image)
+
+    def close(self):
+        self.running = False

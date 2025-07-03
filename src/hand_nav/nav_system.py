@@ -14,14 +14,18 @@ class StandardNavSystem:
         keyboard = KeyController()
         mouse = MouseController()
         
-        cam_manager = CameraManager(
+        self.cam_manager = CameraManager(
             pair=HandPair(
                 HandGesture(keyboard),
                 HandPointer(keyboard, mouse)
             ),
         )
-        
-        cam_manager.start_capture()
+    
+    def start(self):
+        self.cam_manager.start_capture()
+    
+    def close(self):
+        self.cam_manager.close()
 
 #region Standard Hands
 class HandGesture(Hand):

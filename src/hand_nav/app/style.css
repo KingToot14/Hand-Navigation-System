@@ -52,10 +52,18 @@ body {
 
     span {
         padding: 6px 24px;
-        /* margin-right: 12px; */
     }
 
     span:hover {
         background-color: #ccccd7;
     }
+}
+
+.button {
+    padding: 4px 8px;
+    background-color: #e5e5ef;
+}
+
+.button:hover {
+    background-color: #ccccd7;
 }

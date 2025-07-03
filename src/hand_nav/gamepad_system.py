@@ -8,7 +8,7 @@ class GamepadSystem:
     def __init__(self):
         gamepad = vgamepad.VX360Gamepad()
         
-        cam_manager = CameraManager(
+        self.cam_manager = CameraManager(
             pair=HandPair(
                 HandGamepad(
                     gamepad,
@@ -30,8 +30,14 @@ class GamepadSystem:
                 )
             )
         )
-        
-        cam_manager.start_capture()
+    
+    def start(self):
+        self.cam_manager.start_capture()
+    
+    def close(self):
+        self.cam_manager.close()
+        self.cam_manager.pair.left_hand.close()
+        self.cam_manager.pair.right_hand.close()
 
 #region Hands
 class HandGamepad(Hand):
@@ -91,5 +97,8 @@ class HandGamepad(Hand):
         
         if pressed_copy != self.is_pressed:
             self.gamepad.update()
+    
+    def close(self):
+        self.gamepad.reset()
 
 #endregion
