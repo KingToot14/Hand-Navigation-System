@@ -1,3 +1,6 @@
+import configparser
+import os
+
 import vgamepad
 from vgamepad import XUSB_BUTTON
 
@@ -31,13 +34,30 @@ class GamepadSystem:
             )
         )
     
-    def start(self):
+    def start(self) -> None:
         self.cam_manager.start_capture()
     
-    def close(self):
+    def close(self) -> None:
         self.cam_manager.close()
         self.cam_manager.pair.left_hand.close()
         self.cam_manager.pair.right_hand.close()
+    
+    def write_default_config(self):
+        config = configparser.ConfigParser()
+        
+        config['bindings.left'] = {
+            'button1': str(int(XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP)),
+            'button2': str(int(XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN)),
+            'button3': '',
+            'button4': str(int(XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT)),
+            'button5': str(int(XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT)),
+        }
+    
+    def read_config(self):
+        config = configparser.ConfigParser()
+        
+        if not os.path.exists('config/gamepad.ini'):
+            self.write_default_config()
 
 #region Hands
 class HandGamepad(Hand):

@@ -3,8 +3,8 @@
 
 <svg
    width="27"
-   height="32"
-   viewBox="0 0 7.14375 8.4666672"
+   height="35"
+   viewBox="0 0 7.14375 9.2604178"
    version="1.1"
    id="svg1"
    inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
@@ -24,9 +24,9 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      showgrid="true"
-     inkscape:zoom="11.8"
-     inkscape:cx="26.822034"
-     inkscape:cy="17.415254"
+     inkscape:zoom="19.403844"
+     inkscape:cx="8.7353825"
+     inkscape:cy="19.712589"
      inkscape:window-width="1920"
      inkscape:window-height="1171"
      inkscape:window-x="-9"
@@ -125,7 +125,7 @@
        id="path-effect7"
        is_visible="true"
        lpeversion="1"
-       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0.52916669,0,1 @ F,0,0,1,0,0.52916668,0,1 @ F,0,0,1,0,0,0,1"
+       nodesatellites_param="F,0,0,1,0,0,0,1 @ F,0,0,1,0,0.26458332,0,1 @ F,0,0,1,0,0.52916669,0,1 @ F,0,0,1,0,0.52916668,0,1 @ F,0,0,1,0,0,0,1"
        radius="0"
        unit="px"
        method="auto"
@@ -144,11 +144,12 @@
      id="layer1">
     <path
        style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round"
-       d="M 1.3229166,9.2604163 V 2.6458333 A 0.52916669,0.52916669 135 0 1 1.8520833,2.1166666 h 0.2645832 a 0.52916668,0.52916668 45 0 1 0.5291667,0.5291667 v 2.6458333"
+       d="M 1.8520833,10.054166 1.4211804,8.9769084 A 1.3738711,1.3738711 79.099298 0 1 1.3229166,8.4666656 l 0,-5.8208323 A 0.52916669,0.52916669 135 0 1 1.8520833,2.1166666 h 0.2645832 a 0.52916668,0.52916668 45 0 1 0.5291667,0.5291667 v 2.6458333"
        id="path2"
        inkscape:path-effect="#path-effect7"
-       inkscape:original-d="M 1.3229166,9.2604163 V 2.1166666 h 1.3229166 v 3.175"
-       transform="translate(-1.0583333,-1.0583336)" />
+       inkscape:original-d="m 1.8520833,10.054166 -0.5291667,-1.3229171 0,-6.6145823 h 1.3229166 v 3.175"
+       transform="translate(-1.0583333,-1.0583336)"
+       sodipodi:nodetypes="ccccc" />
     <path
        style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round"
        d="M 2.6458332,5.2916666 V 2.1166667 A 0.52916673,0.52916673 135 0 1 3.1749999,1.5875 H 3.4395834 A 0.52916662,0.52916662 45 0 1 3.96875,2.1166666 l 0,2.9104167"
@@ -173,31 +174,31 @@
        transform="translate(-1.0583333,-1.0583336)" />
     <path
        style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round"
-       d="m 6.6145832,7.1437498 -1e-7,-1.0555304 A 0.79655269,0.79655269 135 0 1 7.4111358,5.2916666 h 0.5263638 l 2e-7,2.3561552 A 1.5041767,1.5041767 100.9007 0 1 7.8299161,8.2064591 l -0.4215829,1.0539574 -6.0854166,-2e-7"
+       d="m 6.6145832,7.1437498 -1e-7,-1.0555304 A 0.79655269,0.79655269 135 0 1 7.4111358,5.2916666 h 0.5263638 l 2e-7,2.3561552 A 1.9747153,1.9747153 98.345395 0 1 7.8543024,8.2149733 L 7.3028402,10.054166 H 1.8520833"
        id="path6"
        sodipodi:nodetypes="cccccc"
        inkscape:path-effect="#path-effect11"
-       inkscape:original-d="m 6.6145832,7.1437498 -2e-7,-1.8520832 h 1.3229166 l 2e-7,2.6458332 -0.5291666,1.3229167 -6.0854166,-2e-7"
+       inkscape:original-d="m 6.6145832,7.1437498 -2e-7,-1.8520832 h 1.3229166 l 2e-7,2.6458332 -0.6346596,2.1166662 H 1.8520833"
        transform="translate(-1.0583333,-1.0583336)" />
     <ellipse
        style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round"
        id="path11"
-       cy="6.0854163"
-       cx="2.9104168"
+       cy="6.6145825"
+       cx="3.1750002"
        rx="1.5875001"
        ry="1.5874999" />
     <ellipse
        style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round"
        id="path12"
-       cx="2.9104168"
-       cy="6.0854168"
+       cx="3.1750002"
+       cy="6.614583"
        rx="1.0583334"
        ry="1.0583336" />
     <circle
        style="fill:#000000;fill-opacity:0;stroke:#000000;stroke-width:0.264583;stroke-linecap:round;stroke-linejoin:round"
        id="path13"
-       cx="3.175"
-       cy="5.8208332"
+       cx="3.4395833"
+       cy="6.3499994"
        r="0.26458332" />
   </g>
 </svg>
