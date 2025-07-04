@@ -14,6 +14,15 @@ body {
     margin: 0px;
 }
 
+.two-column {
+    display: flex;
+    width: 100%;
+
+    div {
+        width: 50%;
+    }
+}
+
 /* Navigation */
 
 #header {
@@ -67,4 +76,16 @@ body {
 
 .button:hover {
     background-color: #bbb9c9;
+}
+
+/* Navigation System */
+
+/* Gamepad */
+#gamepad-bindings {
+    display: flex;
+    width: 100%;
+
+    div {
+        width: 25%;
+    }
 }

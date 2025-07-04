@@ -8,7 +8,7 @@
         <link rel="icon" type="image/x-icon" href='images/icon.svg'>
     </head>
 
-    <body>
+    <body onload="startup()">
         <!-- Header -->
         <div id='header'>
             <img src='images/icon.svg' alt='icon'>
@@ -34,6 +34,8 @@
                 <h1>Navigation</h1>
                 
                 <span class='button' id='nav-button' onclick="standard_nav()">Start Capture</span>
+
+                <h2>Settings</h2>
             </div>
             
             <!-- Gamepad -->
@@ -41,6 +43,23 @@
                 <h1>Gamepad</h1>
                 
                 <span class='button' id='gamepad-button' onclick="gamepad()">Start Capture</span>
+
+                <h2>Settings</h2>
+
+                <h3>Bindings</h3>
+
+                <div class='two-column'>
+                    <div>
+                        Image goes here
+                    </div>
+                    <div>
+                        Image goes here
+                    </div>
+                </div>
+                <div class='two-column'>
+                    <div id='gamepad-bindings-left'></div>
+                    <div id='gamepad-bindings-right'></div>
+                </div>
             </div>
         </div>
     </body>
