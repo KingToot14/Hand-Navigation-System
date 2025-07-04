@@ -1,5 +1,7 @@
 var state = 'idle';
 
+window.addEventListener('pywebviewready', startup);
+
 function startup() {
     create_bindings('left', document.getElementById('gamepad-bindings-left'));
     create_bindings('right', document.getElementById('gamepad-bindings-right'));
@@ -64,17 +66,17 @@ function gamepad() {
 }
 
 // --- Settings --- //
-function modify_config_from_select(category, name, select) {
-    modify_config(category, name, select.value);
+function modify_config_from_select(section, option, select) {
+    modify_config(section, option, select.value);
 }
 
-function modify_config(category, name, value) {
-
+function modify_config(section, option, value) {
+    pywebview.api.gamepad_set_config(section, option, value);
 }
 
-function create_bindings(handedness, root) {
-    function create_dropdown(finger, button, default_button) {
-        let html = `
+async function create_bindings(handedness, root) {
+    async function create_dropdown(finger, button) {
+        var html = `
             ${finger}: <select onchange="modify_config_from_select('bindings.${handedness}', '${button}', this)">
                 <option>Unbound</option>
                 <option>D-Pad Up</option>
@@ -94,27 +96,29 @@ function create_bindings(handedness, root) {
                 <option>Y</option>
             </select>
         `;
-
-        html = html.replace(`<option>${default_button}`, `<option selected>${default_button}`)
+        
+        await pywebview.api.gamepad_get_config(`bindings.${handedness}`, button).then(function(response) {
+            html = html.replace(`<option>${response.message}<`, `<option selected>${response.message}<`);
+        });
 
         return html;
     }
 
     if (handedness === 'left') {
         root.innerHTML = `
-            ${create_dropdown('Thumb',   'button1', 'D-Pad Up')}<br/>
-            ${create_dropdown('Pointer', 'button2', 'D-Pad Down')}<br/>
-            ${create_dropdown('Middle',  'button3', '')}<br/>
-            ${create_dropdown('Ring',    'button4', 'D-Pad Left')}<br/>
-            ${create_dropdown('Pinky',   'button5', 'D-Pad Right')}<br/>
+            ${await create_dropdown('Thumb',   'button1')}<br/>
+            ${await create_dropdown('Pointer', 'button2')}<br/>
+            ${await create_dropdown('Middle',  'button3')}<br/>
+            ${await create_dropdown('Ring',    'button4')}<br/>
+            ${await create_dropdown('Pinky',   'button5')}<br/>
         `
     } else {
         root.innerHTML = `
-            ${create_dropdown('Thumb',   'button1', 'A')}<br/>
-            ${create_dropdown('Pointer', 'button2', 'B')}<br/>
-            ${create_dropdown('Middle',  'button3', '')}<br/>
-            ${create_dropdown('Ring',    'button4', 'X')}<br/>
-            ${create_dropdown('Pinky',   'button5', 'Y')}<br/>
+            ${await create_dropdown('Thumb',   'button1')}<br/>
+            ${await create_dropdown('Pointer', 'button2')}<br/>
+            ${await create_dropdown('Middle',  'button3')}<br/>
+            ${await create_dropdown('Ring',    'button4')}<br/>
+            ${await create_dropdown('Pinky',   'button5')}<br/>
         `
     }
 }
