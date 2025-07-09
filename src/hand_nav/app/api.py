@@ -11,6 +11,10 @@ class Api:
         self.config_navigation: ConfigParser
         self.config_gamepad: ConfigParser = self.gamepad_config()
     
+    def close_all(self):
+        if self.nav_system:
+            self.nav_system.close()
+    
     # --- Navigation --- #
     def nav_start(self):
         self.nav_close()
@@ -45,29 +49,35 @@ class Api:
                 'message': 'error'
             }
     
-    def gamepad_close(self):
-        if self.nav_system:
-            self.nav_system.close()
-            self.nav_system = None
-    
     # --- Config --- #
     def gamepad_default_config(self):
         config = ConfigParser()
         
-        config['bindings.left'] = {
-            'button1': "D-Pad Up",
-            'button2': "D-Pad Down",
-            'button3': '',
-            'button4': "D-Pad Left",
-            'button5': "D-Pad Right",
-        }
-        
-        config['bindings.right'] = {
-            'button1': "A",
-            'button2': "B",
-            'button3': '',
-            'button4': "X",
-            'button5': "Y",
+        config['bindings'] = {
+            'a_button':         'Right Thumb',
+            'b_button':         'Right Pointer',
+            'x_button':         'Right Ring',
+            'y_button':         'Right Pinky',
+            'dpad_up':          'Left Thumb',
+            'dpad_down':        'Left Pointer',
+            'dpad_left':        'Left Ring',
+            'dpad_right':       'Left Pinky',
+            'start':            'Unbound',
+            'back':             'Unbound',
+            'l_shoulder':       'Unbound',
+            'r_shoulder':       'Unbound',
+            'l_stick_up':       'Left Up Movement',
+            'l_stick_down':     'Left Down Movement',
+            'l_stick_left':     'Left Left Movement',
+            'l_stick_right':    'Left Right Movement',
+            'l_stick_press':    'Right Up Movement',
+            'r_stick_up':       'Right Down Movement',
+            'r_stick_down':     'Right Left Movement',
+            'r_stick_left':     'Right Right Movement',
+            'r_stick_right':    'Unbound',
+            'r_stick_press':    'Unbound',
+            'l_trigger':        'Unbound',
+            'r_trigger':        'Unbound',
         }
         
         return config

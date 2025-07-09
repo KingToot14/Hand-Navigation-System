@@ -1,3 +1,5 @@
+import math
+
 import cv2
 
 def draw_circle(image, x: int, y: int, fill: tuple[float], outline: tuple[float] = (0, 0, 0), size: int = 5):
@@ -10,3 +12,6 @@ def draw_circle(image, x: int, y: int, fill: tuple[float], outline: tuple[float]
 
 def get_sqr_dist(p1: tuple[float], p2: tuple[float]) -> float:
     return (p1[0] - p2[0])**2 + (p1[1] - p2[1])**2
+
+def get_dist(p1: tuple[float], p2: tuple[float]) -> float:
+    return math.sqrt(get_sqr_dist(p1, p2))

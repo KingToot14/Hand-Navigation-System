@@ -34,6 +34,11 @@ class HandGesture(Hand):
         
         self.is_bent = [False, False, False]
 
+    def close(self) -> None:
+        self.keyboard.release(Key.shift)
+        self.keyboard.release(Key.ctrl)
+        self.keyboard.release(Key.alt)
+
     def interpret_landmarks(self):
         # check shift
         if self.f1_bent:
@@ -75,6 +80,10 @@ class HandPointer(Hand):
         root = tkinter.Tk()
         self.screen_x = root.winfo_screenwidth()
         self.screen_y = root.winfo_screenheight()
+    
+    def close(self) -> None:
+        if self.state:
+            self.state.exit_state()
     
     def interpret_landmarks(self) -> None:
         # handle mouse position

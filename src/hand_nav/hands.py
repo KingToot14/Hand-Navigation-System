@@ -17,6 +17,9 @@ class Hand:
         self.pos = None
         self.landmarks = []
     
+    def close(self):
+        return
+    
     def update_landmarks(self, landmarks: list[NormalizedLandmark]) -> None:
         self.landmarks = landmarks
         
@@ -40,7 +43,7 @@ class Hand:
         self.f5 = landmarks[20]
         
         # check if fingers are bent
-        self.threshold = get_sqr_dist(self.pos, [self.p1.x, self.p1.y])
+        self.threshold = get_dist(self.pos, [self.p1.x, self.p1.y])
         
         threshold_weights = [
             1.25,
@@ -50,11 +53,11 @@ class Hand:
             1.0,
         ]
         
-        self.f1_bend_dist = get_sqr_dist(self.pos, [self.f1.x, self.f1.y])
-        self.f2_bend_dist = get_sqr_dist(self.pos, [self.f2.x, self.f2.y])
-        self.f3_bend_dist = get_sqr_dist(self.pos, [self.f3.x, self.f3.y])
-        self.f4_bend_dist = get_sqr_dist(self.pos, [self.f4.x, self.f4.y])
-        self.f5_bend_dist = get_sqr_dist(self.pos, [self.f5.x, self.f5.y])
+        self.f1_bend_dist = get_dist(self.pos, [self.f1.x, self.f1.y])
+        self.f2_bend_dist = get_dist(self.pos, [self.f2.x, self.f2.y])
+        self.f3_bend_dist = get_dist(self.pos, [self.f3.x, self.f3.y])
+        self.f4_bend_dist = get_dist(self.pos, [self.f4.x, self.f4.y])
+        self.f5_bend_dist = get_dist(self.pos, [self.f5.x, self.f5.y])
         
         self.f1_bent = self.f1_bend_dist < self.threshold * threshold_weights[0]
         self.f2_bent = self.f2_bend_dist < self.threshold * threshold_weights[1]
@@ -132,3 +135,9 @@ class HandPair:
             image = self.right_hand.draw_hand(image)
         
         return image
+
+    def close(self) -> None:
+        if self.left_hand:
+            self.left_hand.close()
+        if self.right_hand:
+            self.right_hand.close()

@@ -61,3 +61,5 @@ class CameraManager:
 
     def close(self):
         self.running = False
+        if self.pair:
+            self.pair.close()
