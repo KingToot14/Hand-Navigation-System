@@ -14,8 +14,13 @@ class BendState(enum.IntEnum):
 
 class Hand:
     def __init__(self):
+        self.last_pos = None
         self.pos = None
+        
         self.landmarks = []
+        
+        self.dead_x: float = 0.0
+        self.dead_y: float = 0.0
     
     def close(self):
         return
@@ -69,6 +74,23 @@ class Hand:
     
     def interpret_landmarks(self) -> None:
         return
+    
+    def get_position_change(self, position: tuple[float, float]) -> tuple[float, float]:
+        if not self.last_pos:
+            self.last_pos = self.pos
+            return
+        
+        # move the mouse cursor (x is flipped)
+        dx = -(position[0] - self.last_pos[0])
+        dy = position[1] - self.last_pos[1]
+        
+        # deadzone
+        if abs(dx) < self.dead_x:
+            dx = 0
+        if abs(dy) < self.dead_y:
+            dy = 0
+        
+        return (dx, dy)
     
     def test_bent(self, b1: BendState, b2: BendState, b3: BendState, b4: BendState, b5: BendState) -> bool:
         return (

@@ -130,13 +130,10 @@ class PointerState:
         self.exit_time: float = 0.0
         self.exiting: bool = False
         
-        self.bend_influence: float = 0.25
-                
         # speed per 10% of capture distance
         self.move_speed: float = 400
         
-        self.dead_x: float = 0.0
-        self.dead_y: float = 0.0
+        self.bend_influence: float = 0.25
         
         self.initialize()
     
@@ -168,15 +165,15 @@ class PointerState:
         dy = position[1] - self.hand.last_pos[1]
         
         # deadzone
-        if abs(dx) < self.dead_x:
+        if abs(dx) < self.hand.dead_x:
             dx = 0
-        if abs(dy) < self.dead_y:
+        if abs(dy) < self.hand.dead_y:
             dy = 0
         
         return (dx, dy)
     
     def update_mouse_position(self) -> None:
-        dx, dy = self.get_position_change(self.hand.pos)
+        dx, dy = self.hand.get_position_change(self.hand.pos)
         
         # adjust sensitivity based on distance
         if self.bend_influence == -1.0:
@@ -251,26 +248,26 @@ class LeftClickState(PointerState):
         
         self.locked = True
     
-    def update_mouse_position(self):
-        if not self.origin:
-            return
+    # def update_mouse_position(self):
+    #     if not self.origin:
+    #         return
         
-        # attempt to unlock (enter drag mode)
-        if self.locked:
-            dx, dy = self.get_position_change(self.origin)
+    #     # attempt to unlock (enter drag mode)
+    #     if self.locked:
+    #         dx, dy = self.hand.get_position_change(self.origin)
 
-            if dx >= self.lock_x or dy >= self.lock_y:
-                self.locked = False
-        else:
-            dx, dy = self.get_position_change(self.hand.pos)
+    #         if dx >= self.lock_x or dy >= self.lock_y:
+    #             self.locked = False
+    #     else:
+    #         dx, dy = self.hand.get_position_change(self.hand.pos)
             
-            # move mouse
-            self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
+    #         # move mouse
+    #         self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
         
-        self.hand.last_pos = (
-            self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
-            self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
-        )
+    #     self.hand.last_pos = (
+    #         self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
+    #         self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
+    #     )
     
     def conditions_met(self):
         return self.hand.test_bent(BendState.EXTEND, BendState.BENT, BendState.EXTEND, BendState.EXTEND, BendState.IGNORE)
