@@ -1,4 +1,5 @@
 from enum import IntEnum
+import re
 
 import vgamepad
 from vgamepad import XUSB_BUTTON
@@ -14,7 +15,8 @@ class GamepadSystem:
         self.cam_manager = CameraManager(
             pair=HandPair(
                 HandGamepad(
-                    gamepad
+                    gamepad,
+                    True
                     # {
                     #     'button1': XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
                     #     'button2': XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
@@ -23,7 +25,8 @@ class GamepadSystem:
                     # }
                 ),
                 HandGamepad(
-                    gamepad
+                    gamepad,
+                    False
                     # {
                     #     'button1': XUSB_BUTTON.XUSB_GAMEPAD_A,
                     #     'button2': XUSB_BUTTON.XUSB_GAMEPAD_B,
@@ -45,12 +48,16 @@ class GamepadSystem:
 #region Hands
 class HandGamepad(Hand):
     def __init__(self, gamepad: vgamepad.VX360Gamepad, left: bool, config: dict = None):
+        super().__init__()
+        
         self.gamepad = gamepad
         
         self.left = False
         self.is_pressed = [False, False, False, False, False]
         self.x_value = 0.0
         self.y_value = 0.0
+        
+        self.joy_deadzone = 0.01
         
         if not config:
             self.load_config()
@@ -102,21 +109,24 @@ class HandGamepad(Hand):
         self.left: list[GamepadMapping] = []
         self.right: list[GamepadMapping] = []
         
+        pattern = re.compile(r'(Left|Right|Unbound)\s?(.*)')
+        
         for key in config['bindings']:
             value: str = config.get('bindings', key)
-            tokens = value.split()
+            
+            result: re.Match[str] = pattern.search(value)
             
             # ignore unbound options
-            if len(tokens) == 1:
+            if not result or result.group(1) == 'Unbound':
                 continue
             
             # ignore bindings of opposite sides
-            if self.left and tokens[0] == 'Right':
+            if self.left and result.group(1) == 'Right':
                 continue
-            if not self.left and tokens[0] == 'Left':
+            if not self.left and result.group(1) == 'Left':
                 continue
             
-            match tokens[1]:
+            match result.group(2):
                 case 'Thumb':
                     self.button1.append(mapping[key])
                 case 'Pointer':
@@ -136,38 +146,72 @@ class HandGamepad(Hand):
                 case 'Right Movement':
                     self.right.append(mapping[key])
     
+    def activate_bindings(self, bindings) -> None:
+        bindings: list[GamepadMapping] = bindings
+        
+        for mapping in bindings:
+            if not mapping.activate():
+                return
+    
+    def deactivate_bindings(self, bindings) -> None:
+        bindings: list[GamepadMapping] = bindings
+        
+        for mapping in bindings:
+            if not mapping.deactivate():
+                return
+    
     def interpret_landmarks(self) -> None:
         # fingers
-        if self.f1_bend:
-            for mapping in self.button1:
-                if not mapping.activate():
-                    break
+        if self.f1_bent:
+            self.activate_bindings(self.button1)
+        else:
+            self.deactivate_bindings(self.button1)
         
-        if self.f2_bend:
-            for mapping in self.button2:
-                if not mapping.activate():
-                    break
+        if self.f2_bent:
+            self.activate_bindings(self.button2)
+        else:
+            self.deactivate_bindings(self.button2)
         
-        if self.f3_bend:
-            for mapping in self.button3:
-                if not mapping.activate():
-                    break
+        if self.f3_bent:
+            self.activate_bindings(self.button3)
+        else:
+            self.deactivate_bindings(self.button3)
         
-        if self.f4_bend:
-            for mapping in self.button4:
-                if not mapping.activate():
-                    break
+        if self.f4_bent:
+            self.activate_bindings(self.button4)
+        else:
+            self.deactivate_bindings(self.button4)
         
-        if self.f5_bend:
-            for mapping in self.button5:
-                if not mapping.activate():
-                    break
+        if self.f5_bent:
+            self.activate_bindings(self.button5)
+        else:
+            self.deactivate_bindings(self.button5)
         
         # movement
+        if self.dy < -self.joy_deadzone:
+            self.activate_bindings(self.up)
+        else:
+            self.deactivate_bindings(self.up)
         
+        if self.dy > self.joy_deadzone:
+            self.activate_bindings(self.down)
+        else:
+            self.deactivate_bindings(self.down)
+        
+        if self.dx < -self.joy_deadzone:
+            self.activate_bindings(self.left)
+        else:
+            self.deactivate_bindings(self.left)
+        
+        if self.dx > self.joy_deadzone:
+            self.activate_bindings(self.right)
+        else:
+            self.deactivate_bindings(self.right)
         
         # push changes
         self.gamepad.update()
+        
+        
         # pressed_copy = self.is_pressed.copy()
         
         # if self.button1 != None and self.f1_bent:

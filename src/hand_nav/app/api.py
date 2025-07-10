@@ -38,7 +38,7 @@ class Api:
     
     # --- Gamepad --- #
     def gamepad_start(self):
-        self.gamepad_close()
+        self.nav_close()
         try:
             self.nav_system = GamepadSystem()
             self.nav_system.start()

@@ -21,6 +21,9 @@ class Hand:
         
         self.dead_x: float = 0.0
         self.dead_y: float = 0.0
+        
+        self.dx = 0.0
+        self.dy = 0.0
     
     def close(self):
         return
