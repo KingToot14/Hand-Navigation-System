@@ -173,7 +173,10 @@ class PointerState:
         return (dx, dy)
     
     def update_mouse_position(self) -> None:
-        dx, dy = self.hand.get_position_change(self.hand.pos)
+        self.hand.update_delta()
+        
+        dx = self.hand.dx
+        dy = self.hand.dy
         
         # adjust sensitivity based on distance
         if self.bend_influence == -1.0:
@@ -191,11 +194,6 @@ class PointerState:
         
         # move mouse
         self.mouse.move(dx * self.move_speed * 10, dy * self.move_speed * 10)
-        
-        self.hand.last_pos = (
-            self.hand.pos[0] if dx != 0 else self.hand.last_pos[0],
-            self.hand.pos[1] if dy != 0 else self.hand.last_pos[1]
-        )
     
     def handle_landmarks(self) -> None:
         self.check_exit()

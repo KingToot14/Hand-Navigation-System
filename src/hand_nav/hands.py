@@ -73,12 +73,23 @@ class Hand:
         self.interpret_landmarks()
     
     def interpret_landmarks(self) -> None:
-        return
+        self.update_delta()
+    
+    def update_delta(self) -> None:
+        dx, dy = self.get_position_change(self.pos)
+        
+        self.dx = dx
+        self.dy = dy
+        
+        self.last_pos = (
+            self.pos[0] if dx != 0 else self.last_pos[0],
+            self.pos[1] if dy != 0 else self.last_pos[1]
+        )
     
     def get_position_change(self, position: tuple[float, float]) -> tuple[float, float]:
         if not self.last_pos:
             self.last_pos = self.pos
-            return
+            return (0, 0)
         
         # move the mouse cursor (x is flipped)
         dx = -(position[0] - self.last_pos[0])
