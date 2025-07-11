@@ -1,6 +1,7 @@
 import enum
 
 import cv2
+import tkinter
 
 from mediapipe.tasks.python.vision.hand_landmarker import HandLandmarkerResult
 from mediapipe.tasks.python.components.containers.landmark import NormalizedLandmark
@@ -19,14 +20,31 @@ class Hand:
         
         self.landmarks = []
         
+        # deadzone
         self.dead_x: float = 0.0
         self.dead_y: float = 0.0
         
-        self.dx = 0.0
-        self.dy = 0.0
+        # movement delta
+        self.dx: float = 0.0
+        self.dy: float = 0.0
+        
+        # capture size
+        self.capture_size_set: bool = False
+        self.width: float = 0.0
+        self.height: float = 0.0
+        
+        # window size
+        root = tkinter.Tk()
+        self.screen_x: float = root.winfo_screenwidth()
+        self.screen_y: float = root.winfo_screenheight()
     
-    def close(self):
+    def close(self) -> None:
         return
+    
+    def set_capture_size(self, width, height) -> None:
+        self.capture_size_set = True
+        self.width = width
+        self.height = height
     
     def update_landmarks(self, landmarks: list[NormalizedLandmark]) -> None:
         self.landmarks = landmarks
@@ -54,24 +72,24 @@ class Hand:
         self.threshold = get_dist(self.pos, [self.p1.x, self.p1.y])
         
         threshold_weights = [
-            1.25,
+            0.75,
             1.0,
             1.0,
             1.0,
             1.0,
         ]
         
-        self.f1_bend_dist = get_dist(self.pos, [self.f1.x, self.f1.y])
-        self.f2_bend_dist = get_dist(self.pos, [self.f2.x, self.f2.y])
-        self.f3_bend_dist = get_dist(self.pos, [self.f3.x, self.f3.y])
-        self.f4_bend_dist = get_dist(self.pos, [self.f4.x, self.f4.y])
-        self.f5_bend_dist = get_dist(self.pos, [self.f5.x, self.f5.y])
+        self.f1_bend_dist = get_dist(self.pos, [self.f1.x, self.f1.y]) / self.threshold
+        self.f2_bend_dist = get_dist(self.pos, [self.f2.x, self.f2.y]) / self.threshold
+        self.f3_bend_dist = get_dist(self.pos, [self.f3.x, self.f3.y]) / self.threshold
+        self.f4_bend_dist = get_dist(self.pos, [self.f4.x, self.f4.y]) / self.threshold
+        self.f5_bend_dist = get_dist(self.pos, [self.f5.x, self.f5.y]) / self.threshold
         
-        self.f1_bent = self.f1_bend_dist < self.threshold * threshold_weights[0]
-        self.f2_bent = self.f2_bend_dist < self.threshold * threshold_weights[1]
-        self.f3_bent = self.f3_bend_dist < self.threshold * threshold_weights[2]
-        self.f4_bent = self.f4_bend_dist < self.threshold * threshold_weights[3]
-        self.f5_bent = self.f5_bend_dist < self.threshold * threshold_weights[4]
+        self.f1_bent = self.f1_bend_dist < threshold_weights[0]
+        self.f2_bent = self.f2_bend_dist < threshold_weights[1]
+        self.f3_bent = self.f3_bend_dist < threshold_weights[2]
+        self.f4_bent = self.f4_bend_dist < threshold_weights[3]
+        self.f5_bent = self.f5_bend_dist < threshold_weights[4]
         
         self.interpret_landmarks()
     
@@ -94,9 +112,13 @@ class Hand:
             self.last_pos = self.pos
             return (0, 0)
         
-        # move the mouse cursor (x is flipped)
+        # calculate deltas
         dx = -(position[0] - self.last_pos[0])
         dy = position[1] - self.last_pos[1]
+        
+        # convert from screen to 'threshold' space
+        dx /= self.threshold
+        dy /= self.threshold
         
         # deadzone
         if abs(dx) < self.dead_x:
@@ -177,3 +199,9 @@ class HandPair:
             self.left_hand.close()
         if self.right_hand:
             self.right_hand.close()
+    
+    def set_capture_size(self, width, height) -> None:
+        if self.left_hand:
+            self.left_hand.set_capture_size(width, height)
+        if self.right_hand:
+            self.right_hand.set_capture_size(width, height)

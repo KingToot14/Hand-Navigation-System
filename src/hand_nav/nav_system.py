@@ -1,7 +1,6 @@
 import time
 
 import cv2
-import tkinter
 
 from hand_nav.camera_manager import CameraManager
 from hand_nav.hands import Hand, HandPair, BendState
@@ -74,12 +73,6 @@ class HandPointer(Hand):
         self.mouse: MouseController = mouse if mouse else MouseController()
         self.keyboard: KeyController = keyboard if keyboard else KeyController()
         self.state: PointerState = NoneState(self, self.mouse, self.keyboard)
-        
-        self.last_pos: tuple[float, float] = (0, 0)
-        
-        root = tkinter.Tk()
-        self.screen_x = root.winfo_screenwidth()
-        self.screen_y = root.winfo_screenheight()
     
     def close(self) -> None:
         if self.state:
@@ -130,8 +123,8 @@ class PointerState:
         self.exit_time: float = 0.0
         self.exiting: bool = False
         
-        # speed per 10% of capture distance
-        self.move_speed: float = 400
+        # speed per 'threshold' distance
+        self.move_speed: float = 40
         
         self.bend_influence: float = 0.25
         

@@ -34,6 +34,12 @@ class CameraManager:
         if not cap:
             cap = cv2.VideoCapture(0)
 
+        self.width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+        self.height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+        
+        if self.pair:
+            self.pair.set_capture_size(self.width, self.height)
+
         while self.running:
             ret, frame = cap.read()
             

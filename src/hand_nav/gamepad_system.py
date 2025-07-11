@@ -210,52 +210,6 @@ class HandGamepad(Hand):
         
         # push changes
         self.gamepad.update()
-        
-        
-        # pressed_copy = self.is_pressed.copy()
-        
-        # if self.button1 != None and self.f1_bent:
-        #     if not self.is_pressed[0]:
-        #         self.is_pressed[0] = True
-        #         self.gamepad.press_button(self.button1)
-        # elif self.is_pressed[0]:
-        #     self.is_pressed[0] = False
-        #     self.gamepad.release_button(self.button1)
-        
-        # if self.button2 != None and self.f2_bent:
-        #     if not self.is_pressed[1]:
-        #         self.is_pressed[1] = True
-        #         self.gamepad.press_button(self.button2)
-        # elif self.is_pressed[1]:
-        #     self.is_pressed[1] = False
-        #     self.gamepad.release_button(self.button2)
-        
-        # if self.button3 != None and self.f3_bent:
-        #     if not self.is_pressed[2]:
-        #         self.is_pressed[2] = True
-        #         self.gamepad.press_button(self.button3)
-        # elif self.is_pressed[2]:
-        #     self.is_pressed[2] = False
-        #     self.gamepad.release_button(self.button3)
-        
-        # if self.button4 != None and self.f4_bent:
-        #     if not self.is_pressed[3]:
-        #         self.is_pressed[3] = True
-        #         self.gamepad.press_button(self.button4)
-        # elif self.is_pressed[3]:
-        #     self.is_pressed[3] = False
-        #     self.gamepad.release_button(self.button4)
-        
-        # if self.button5 != None and self.f5_bent:
-        #     if not self.is_pressed[4]:
-        #         self.is_pressed[4] = True
-        #         self.gamepad.press_button(self.button5)
-        # elif self.is_pressed[4]:
-        #     self.is_pressed[4] = False
-        #     self.gamepad.release_button(self.button5)
-        
-        # if pressed_copy != self.is_pressed:
-        #     self.gamepad.update()
     
     def close(self):
         self.gamepad.reset()
