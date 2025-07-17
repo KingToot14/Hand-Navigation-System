@@ -1,11 +1,10 @@
-from hand_nav.nav_system import StandardNavSystem
-from hand_nav.gamepad_system import GamepadSystem
+from hand_nav.app.api import Api
 
 if __name__ == "__main__":
-    nav = StandardNavSystem()
-    # nav = GamepadSystem()
+    api = Api()
     
     try:
-        nav.start()
+        api.start_navigation('standard')
+        # api.start_navigation('gamepad')
     finally:
-        nav.close()
+        api.close_navigation()

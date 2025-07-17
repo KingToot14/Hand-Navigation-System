@@ -20,9 +20,12 @@ class Hand:
         
         self.landmarks = []
         
-        # deadzone
-        self.dead_x: float = 0.0
-        self.dead_y: float = 0.0
+        # anchor points
+        self.anchor_movement: float = 0.05
+        self.anchor_points: int = 3
+        
+        # bend speed
+        self.bend_movement: float = 1.0
         
         # movement delta
         self.dx: float = 0.0
@@ -99,17 +102,57 @@ class Hand:
     def update_delta(self) -> None:
         dx, dy = self.get_position_change(self.pos)
         
+        # update point deltas
+        delta_p1 = get_dist([self.p1.x, self.p1.y], [self.last_p1.x, self.last_p1.y]) / self.threshold
+        delta_p2 = get_dist([self.p2.x, self.p2.y], [self.last_p2.x, self.last_p2.y]) / self.threshold
+        delta_p3 = get_dist([self.p3.x, self.p3.y], [self.last_p3.x, self.last_p3.y]) / self.threshold
+        
+        # anchor points
+        points: int = 0
+        
+        if delta_p1 >= self.anchor_movement:
+            points += 1
+        if delta_p2 >= self.anchor_movement:
+            points += 1
+        if delta_p3 >= self.anchor_movement:
+            points += 1
+        
+        if points < self.anchor_points:
+            dx = 0.0
+            dy = 0.0
+        
+        # finger bending
+        delta_f1 = self.f1_bend_dist - self.last_f1
+        
+        if delta_f1 > self.bend_movement:
+            dx = 0.0
+            dy = 0.0
+        
+        self.last_f1 = self.f1_bend_dist
+        
+        # update position deltas
         self.dx = dx
         self.dy = dy
         
+        # update last positions
         self.last_pos = (
             self.pos[0] if dx != 0 else self.last_pos[0],
             self.pos[1] if dy != 0 else self.last_pos[1]
         )
+        
+        if points >= self.anchor_points:
+            self.last_p1 = self.p1
+            self.last_p2 = self.p2
+            self.last_p3 = self.p3
     
     def get_position_change(self, position: tuple[float, float]) -> tuple[float, float]:
         if not self.last_pos:
             self.last_pos = self.pos
+            self.last_p1 = self.p1
+            self.last_p2 = self.p2
+            self.last_p3 = self.p3
+            self.last_f1 = self.f1_bend_dist
+            
             return (0, 0)
         
         # calculate deltas
@@ -119,12 +162,6 @@ class Hand:
         # convert from screen to 'threshold' space
         dx /= self.threshold
         dy /= self.threshold
-        
-        # deadzone
-        if abs(dx) < self.dead_x:
-            dx = 0
-        if abs(dy) < self.dead_y:
-            dy = 0
         
         return (dx, dy)
     

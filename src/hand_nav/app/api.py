@@ -1,4 +1,6 @@
 import os
+import multiprocessing as mp
+
 from configparser import ConfigParser
 
 from hand_nav.util import gamepad_config
@@ -8,47 +10,43 @@ from hand_nav.gamepad_system import GamepadSystem
 class Api:
     def __init__(self):
         self.nav_system: StandardNavSystem = None
+        self.nav_process: mp.Process = None
 
         self.config_navigation: ConfigParser
         self.config_gamepad: ConfigParser = gamepad_config()
     
-    def close_all(self):
-        if self.nav_system:
-            self.nav_system.close()
-    
     # --- Navigation --- #
-    def nav_start(self):
-        self.nav_close()
+    def start_thread(self, system):
         try:
-            self.nav_system = StandardNavSystem()
+            self.nav_system = system()
             self.nav_system.start()
-            return {
-                'message': 'ok'
-            }
-        except:
-            return {
-                'message': 'error'
-            }
-    
-    def nav_close(self):
-        if self.nav_system:
+        finally:
             self.nav_system.close()
-            self.nav_system = None
     
+    def start_navigation(self, system: str):
+        self.close_navigation()
+        
+        if system == 'standard':
+            self.nav_process = mp.Process(target=self.start_thread, args=(StandardNavSystem,))
+        elif system == 'gamepad':
+            self.nav_process = mp.Process(target=self.start_thread, args=(GamepadSystem,))
+        
+        self.nav_process.start()
+        self.nav_process.join()
+        
+        return {
+            'message': 'ok'
+        }
     
-    # --- Gamepad --- #
-    def gamepad_start(self):
-        self.nav_close()
-        try:
-            self.nav_system = GamepadSystem()
-            self.nav_system.start()
-            return {
-                'message': 'ok'
-            }
-        except:
-            return {
-                'message': 'error'
-            }
+    def close_navigation(self):
+        if self.nav_process:
+            # terminate process
+            self.nav_process.terminate()
+            self.nav_process.join()
+            self.nav_process.close()
+            
+            self.nav_process = None
+    
     
     # --- Config --- #
     def gamepad_get_config(self, section, option):

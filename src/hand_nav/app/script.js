@@ -19,13 +19,13 @@ function show_panel(panel) {
 }
 
 // --- Capturing --- //
-function standard_nav() {
+function start_navigation(system) {
     if (state === 'idle') {
         state = 'starting';
         document.getElementById('nav-button').textContent = "Starting...";
 
         // Start navigation
-        let response = pywebview.api.nav_start();
+        let response = pywebview.api.start_navigation(system);
 
         if (response.message === 'error') {
             document.getElementById('nav-button').textContent = "Start Capture";
@@ -35,33 +35,10 @@ function standard_nav() {
         state = 'running';
         document.getElementById('nav-button').textContent = "Stop Capture";
     } else if (state === 'running') {
-        pywebview.api.nav_close();
+        pywebview.api.close_navigation();
 
         state = 'idle';
         document.getElementById('nav-button').textContent = "Start Capture";
-    }
-}
-
-function gamepad() {
-    if (state === 'idle') {
-        state = 'starting';
-        document.getElementById('gamepad-button').textContent = "Starting...";
-
-        // Start gamepad
-        let response = pywebview.api.gamepad_start();
-
-        if (response.message === 'error') {
-            document.getElementById('gamepad-button').textContent = "Start Capture";
-            return;
-        }
-
-        state = 'running';
-        document.getElementById('gamepad-button').textContent = "Stop Capture";
-    } else if (state === 'running') {
-        pywebview.api.nav_close();
-
-        state = 'idle';
-        document.getElementById('gamepad-button').textContent = "Start Capture";
     }
 }
 
