@@ -15,11 +15,13 @@ class CameraManager:
         self.detector = detector
         if not self.detector:
             base_options = python.BaseOptions(
-                model_asset_path='models/hand_landmarker.task'
+                model_asset_path='models/hand_landmarker.task',
             )
 
-            options = vision.HandLandmarkerOptions(base_options=base_options,
-                                                num_hands=2)
+            options = vision.HandLandmarkerOptions( base_options=base_options,
+                                                    
+                                                    num_hands=2,
+            )
 
             self.detector = vision.HandLandmarker.create_from_options(options)
         

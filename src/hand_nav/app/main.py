@@ -5,7 +5,8 @@ if __name__ == '__main__':
     api = Api()
     
     try:
-        window = webview.create_window('Hand Nav', 'index.html', js_api=api)
+        api.window = webview.create_window('Hand Nav', 'index.html', js_api=api)
+        
         webview.start()
     finally:
         api.close_navigation()

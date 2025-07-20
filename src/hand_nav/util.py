@@ -19,7 +19,25 @@ def get_sqr_dist(p1: tuple[float], p2: tuple[float]) -> float:
 def get_dist(p1: tuple[float], p2: tuple[float]) -> float:
     return math.sqrt(get_sqr_dist(p1, p2))
 
-def gamepad_default_config():
+def main_default_config() -> ConfigParser:
+    config = ConfigParser()
+    
+    config['window'] = {
+        'use_dummy':    'True'
+    }
+
+def main_config() -> ConfigParser:
+    config: ConfigParser
+    
+    if not os.path.exists('config/config.ini'):
+        config = main_default_config()
+    else:
+        config = ConfigParser()
+        config.read('config/config.ini')
+    
+    return config
+
+def gamepad_default_config() -> ConfigParser:
         config = ConfigParser()
         
         config['bindings'] = {
@@ -51,13 +69,13 @@ def gamepad_default_config():
         
         return config
 
-def gamepad_config():
-        config: ConfigParser
-        
-        if not os.path.exists('config/gamepad.ini'):
-            config = gamepad_default_config()
-        else:
-            config = ConfigParser()
-            config.read('config/gamepad.ini')
-        
-        return config
+def gamepad_config() -> ConfigParser:
+    config: ConfigParser
+    
+    if not os.path.exists('config/gamepad.ini'):
+        config = gamepad_default_config()
+    else:
+        config = ConfigParser()
+        config.read('config/gamepad.ini')
+    
+    return config
