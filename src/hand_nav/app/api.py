@@ -13,12 +13,14 @@ class NavProcess:
         self.process: mp.Process = None
         self.nav_system = None
     
-    def start_thread(self, system):
+    def start_thread(self, system, conn):
         try:
             self.nav_system = system()
+            conn.send(["ok"])
             self.nav_system.start()
         finally:
             self.nav_system.close()
+            conn.send(["closed"])
 
 class Api:
     def __init__(self):
@@ -38,16 +40,7 @@ class Api:
         }
     
     # --- Navigation --- #
-    def start_thread(self, system):
-        try:
-            self.nav_system = system()
-            self.nav_system.start()
-        finally:
-            self.nav_system.close()
-    
     def create_dummy(self):
-        print("Creating dummy:", self.window)
-        
         if not self.window:
             return
         
@@ -86,17 +79,27 @@ class Api:
         
         # start process
         process = NavProcess()
+        parent, child = mp.Pipe()
         
         if system == 'standard':
-            self.nav_process = mp.Process(target=process.start_thread, args=(StandardNavSystem,))
+            self.nav_process = mp.Process(target=process.start_thread, args=(StandardNavSystem, child))
         elif system == 'gamepad':
-            self.nav_process = mp.Process(target=process.start_thread, args=(GamepadSystem,))
+            self.nav_process = mp.Process(target=process.start_thread, args=(GamepadSystem, child))
         
         self.nav_process.start()
-        self.nav_process.join()
+        
+        # wait for process to start
+        ret = parent.recv()[0]
+        
+        if ret == 'ok':
+            # hide window
+            if self.window and self.config.get('window', 'minimize_window') == 'True':
+                self.window.minimize()
+        
+        # self.nav_process.join()
         
         return {
-            'message': 'ok'
+            'message': str(ret)
         }
     
     def close_navigation(self):

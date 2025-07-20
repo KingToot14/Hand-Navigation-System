@@ -2,13 +2,23 @@ var state = 'idle';
 
 window.addEventListener('pywebviewready', startup);
 
-function startup() {
+async function startup() {
     // Load active window
     pywebview.api.load_window()
 
     // Load content
     create_bindings('gamepad-bindings-left');
     create_bindings('gamepad-bindings-right');
+
+    for (const element of document.getElementsByClassName('setting_box')) {
+        element.addEventListener('click', function() {
+            modify_config_from_check(element.dataset.section, element.dataset.option, this);
+        });
+
+        await pywebview.api.get_config(element.dataset.section, element.dataset.option).then(function(response) {
+            element.checked = response.message === 'True';
+        });
+    }
 }
 
 function show_panel(panel) {
@@ -29,20 +39,24 @@ function start_navigation(system) {
         document.getElementById('nav-button').textContent = "Starting...";
 
         // Start navigation
-        let response = pywebview.api.start_navigation(system);
+        pywebview.api.start_navigation(system).then(function(response) {
+            alert(`response: ${response.message}`);
 
-        if (response.message === 'error') {
-            document.getElementById('nav-button').textContent = "Start Capture";
-            return;
-        }
-
-        state = 'running';
-        document.getElementById('nav-button').textContent = "Stop Capture";
+            if (response.message === 'ok') {
+                state = 'running';
+                document.getElementById('nav-button').textContent = "Stop Capture";
+            } else {
+                state = 'idle'
+                document.getElementById('nav-button').textContent = "Start Capture";
+            }
+        })
     } else if (state === 'running') {
-        pywebview.api.close_navigation();
+        document.getElementById('nav-button').textContent = "Closing...";
 
-        state = 'idle';
-        document.getElementById('nav-button').textContent = "Start Capture";
+        pywebview.api.close_navigation().then(function(response) {
+            state = 'idle';
+            document.getElementById('nav-button').textContent = "Start Capture";
+        })
     }
 }
 

@@ -23,7 +23,8 @@ def main_default_config() -> ConfigParser:
     config = ConfigParser()
     
     config['window'] = {
-        'use_dummy':    'True'
+        'use_dummy':        'True',
+        'minimize_window':  'True',
     }
     
     config['gamepad.bindings'] = {
