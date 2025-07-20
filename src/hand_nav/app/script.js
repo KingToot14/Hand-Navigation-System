@@ -30,6 +30,7 @@ function show_panel(panel) {
     toggle('general');
     toggle('navigation');
     toggle('gamepad');
+    toggle('information');
 }
 
 // --- Capturing --- //
@@ -80,7 +81,7 @@ function modify_config(section, option, value) {
 async function create_bindings(id) {
     async function create_dropdown(title, button) {
         var html = `
-            ${title}: <select onchange="modify_config_from_select('gamepad.bindings', '${button}', this)">
+            <select onchange="modify_config_from_select('gamepad.bindings', '${button}', this)">
                 <option>Unbound</option>
                 <option>Left Thumb</option>
                 <option>Left Pointer</option>
@@ -100,7 +101,7 @@ async function create_bindings(id) {
                 <option>Right Down Movement</option>
                 <option>Right Left Movement</option>
                 <option>Right Right Movement</option>
-            </select>
+            </select> ${title}
         `;
         
         await pywebview.api.get_config(`gamepad.bindings`, button).then(function(response) {

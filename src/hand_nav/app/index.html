@@ -18,6 +18,7 @@
                 <span onclick="show_panel('general')">General</span>
                 <span onclick="show_panel('navigation')">Navigation</span>
                 <span onclick="show_panel('gamepad')">Gamepad</span>
+                <span onclick="show_panel('information')">Information</span>
             </div>
         </div>
 
@@ -25,21 +26,29 @@
             <!-- General -->
             <div id='general' style="display: block;">
                 <h1>General</h1>
-                <h2>Info</h2>
-
-                <h2>How to Use</h2>
-
-                <h2>Settings</h2>
                 
-                <input type="checkbox" class="setting_box" id="ckbx-dummy"
-                    data-section="window" data-option="use_dummy"> 
-                <label for="ckbx-dummy">Create Dummy Window</label>
+                <h2>Usage</h2>
+                Select either the "Navigation" or "Gamepad" tab at the top to launch either system. Each tab has an assortment of settings to customize your experience.
 
-                <br/>
+                <h2>General Settings</h2>
+                
+                <div>
+                    <input type="checkbox" class="setting_box" id="ckbx-dummy"
+                        data-section="window" data-option="use_dummy">
+                    <label for="ckbx-dummy"><b>Create Dummy Window</b></label>
+                    <p>
+                        Creates a small window off-screen that is set to be 'always on top'. This prevents slowdowns on Windows when the GUI is out of focus.
+                    </p>
+                </div>
 
-                <input type="checkbox" class="setting_box" id="ckbx-minimize"
-                    data-section="window" data-option="minimize_window">
-                <label for="ckbx-minimize">Minimize Window After Caputre Starts</label>
+                <div>
+                    <input type="checkbox" class="setting_box" id="ckbx-minimize"
+                        data-section="window" data-option="minimize_window">
+                    <label for="ckbx-minimize"><b>Minimize Window After Capture Starts</b></label>
+                    <p>
+                        Once either the Navigation or Gamepad system starts, the GUI is minimized automatically.
+                    </p>
+                </div>
             </div>
             
             <!-- Standard Navigation -->
@@ -48,7 +57,11 @@
                 
                 <span class='button' id='nav-button' onclick="start_navigation('standard')">Start Capture</span>
 
-                <h2>Settings</h2>
+                <br/><br/>
+
+                This is the standard navigation system this project was originally designed around. It emulates a keyboard and mouse by recognizing various hand gestures, as well as how the hand moves.
+
+                <h2>Navigation Settings</h2>
             </div>
             
             <!-- Gamepad -->
@@ -57,7 +70,11 @@
                 
                 <span class='button' id='gamepad-button' onclick="start_navigation('gamepad')">Start Capture</span>
 
-                <h2>Settings</h2>
+                <br/><br/>
+
+                This is an addition to the original project since a primary motivator for the project was to explore new ways to interact with games. Emulating a gamepad can allow for this system to work with (theoretically) any game that supports an XBox 360 controller.
+
+                <h2>Gamepad Settings</h2>
 
                 <h3>Bindings</h3>
 
@@ -65,6 +82,23 @@
                     <div id='gamepad-bindings-left'></div>
                     <div id='gamepad-bindings-right'></div>
                 </div>
+            </div>
+
+            <!-- Information -->
+            <div id='information' style="display: none;">
+                <h1>Information</h1>
+
+                <h2>Authors</h2>
+                <p><b>Primary Developer</b>: Jacob Vanluven (IUP 2026)</p>
+                <p><b>Project Mentor</b>: Samuel Grieggs (IUP Computer Science)</p>
+
+                <h2>Program</h2>
+                This projects was developed for the 2025 IUP U-SOAR program which supports undergraduate research through workshops, project funding, and one-on-one faculty mentorship. The program took place throughout the summer of 2025 (June 11th to August 20th) over 10 weeks.
+
+                <h2>Primary Libraries</h2>
+                Google's Mediapipe <a href="https://ai.google.dev/edge/mediapipe/solutions/guide" target="_blank">Main Page</a> | <a href="https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker" target="_blank">Hand Landmark Detection</a>
+                <br/>
+                OpenCV: <a href="https://opencv.org" target="_blank">Main Page</a>
             </div>
         </div>
     </body>

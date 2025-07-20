@@ -23,6 +23,10 @@ body {
     }
 }
 
+p > b, label > b {
+    color: #007abb;
+}
+
 /* Navigation */
 
 #header {
