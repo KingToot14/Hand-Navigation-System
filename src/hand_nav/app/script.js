@@ -3,6 +3,10 @@ var state = 'idle';
 window.addEventListener('pywebviewready', startup);
 
 function startup() {
+    // Load active window
+    pywebview.api.load_window()
+
+    // Load content
     create_bindings('gamepad-bindings-left');
     create_bindings('gamepad-bindings-right');
 }

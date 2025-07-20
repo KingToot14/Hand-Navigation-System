@@ -25,6 +25,11 @@ def main_default_config() -> ConfigParser:
     config['window'] = {
         'use_dummy':    'True'
     }
+    
+    with open('config/config.ini', 'w') as file:
+        config.write(file)
+    
+    return config
 
 def main_config() -> ConfigParser:
     config: ConfigParser
@@ -38,36 +43,39 @@ def main_config() -> ConfigParser:
     return config
 
 def gamepad_default_config() -> ConfigParser:
-        config = ConfigParser()
-        
-        config['bindings'] = {
-            'a_button':         'Right Thumb',
-            'b_button':         'Right Pointer',
-            'x_button':         'Right Ring',
-            'y_button':         'Right Pinky',
-            'dpad_up':          'Left Thumb',
-            'dpad_down':        'Left Pointer',
-            'dpad_left':        'Left Ring',
-            'dpad_right':       'Left Pinky',
-            'start':            'Unbound',
-            'back':             'Unbound',
-            'l_shoulder':       'Unbound',
-            'r_shoulder':       'Unbound',
-            'l_stick_up':       'Left Up Movement',
-            'l_stick_down':     'Left Down Movement',
-            'l_stick_left':     'Left Left Movement',
-            'l_stick_right':    'Left Right Movement',
-            'l_stick_press':    'Right Up Movement',
-            'r_stick_up':       'Right Down Movement',
-            'r_stick_down':     'Right Left Movement',
-            'r_stick_left':     'Right Right Movement',
-            'r_stick_right':    'Unbound',
-            'r_stick_press':    'Unbound',
-            'l_trigger':        'Unbound',
-            'r_trigger':        'Unbound',
-        }
-        
-        return config
+    config = ConfigParser()
+    
+    config['bindings'] = {
+        'a_button':         'Right Thumb',
+        'b_button':         'Right Pointer',
+        'x_button':         'Right Ring',
+        'y_button':         'Right Pinky',
+        'dpad_up':          'Left Thumb',
+        'dpad_down':        'Left Pointer',
+        'dpad_left':        'Left Ring',
+        'dpad_right':       'Left Pinky',
+        'start':            'Unbound',
+        'back':             'Unbound',
+        'l_shoulder':       'Unbound',
+        'r_shoulder':       'Unbound',
+        'l_stick_up':       'Left Up Movement',
+        'l_stick_down':     'Left Down Movement',
+        'l_stick_left':     'Left Left Movement',
+        'l_stick_right':    'Left Right Movement',
+        'l_stick_press':    'Right Up Movement',
+        'r_stick_up':       'Right Down Movement',
+        'r_stick_down':     'Right Left Movement',
+        'r_stick_left':     'Right Right Movement',
+        'r_stick_right':    'Unbound',
+        'r_stick_press':    'Unbound',
+        'l_trigger':        'Unbound',
+        'r_trigger':        'Unbound',
+    }
+    
+    with open('config/gamepad.ini', 'w') as file:
+        config.write(file)
+    
+    return config
 
 def gamepad_config() -> ConfigParser:
     config: ConfigParser

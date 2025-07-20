@@ -8,11 +8,22 @@ from hand_nav.util import gamepad_config, main_config
 from hand_nav.nav_system import StandardNavSystem
 from hand_nav.gamepad_system import GamepadSystem
 
+class NavProcess:
+    def __init__(self):
+        self.process: mp.Process = None
+        self.nav_system = None
+    
+    def start_thread(self, system):
+        try:
+            self.nav_system = system()
+            self.nav_system.start()
+        finally:
+            self.nav_system.close()
+
 class Api:
     def __init__(self):
-        self.nav_system: StandardNavSystem = None
+        self.nav_system = None
         self.nav_process: mp.Process = None
-        self.nav_string: str = ""
 
         self.config_navigation: ConfigParser
         self.config_gamepad: ConfigParser = gamepad_config()
@@ -21,6 +32,13 @@ class Api:
         
         self.window: webview.Window = None
         self.dummy: webview.Window = None
+    
+    def load_window(self):
+        self.window = webview.active_window()
+        
+        return {
+            'message': 'ok'
+        }
     
     # --- Navigation --- #
     def start_thread(self, system):
@@ -31,6 +49,8 @@ class Api:
             self.nav_system.close()
     
     def create_dummy(self):
+        print("Creating dummy:", self.window)
+        
         if not self.window:
             return
         
@@ -39,6 +59,10 @@ class Api:
                                       on_top=True, resizable=False, frameless=True, shadow=False)
         
         self.window.events.closed += self.dummy.destroy
+        
+        return {
+            'message': 'ok'
+        }
     
     def destroy_dummy(self):
         if not self.dummy:
@@ -51,21 +75,25 @@ class Api:
             self.window.events.closed -= self.dummy.destroy
         
         self.dummy = None
+        
+        return {
+            'message': 'ok'
+        }
     
     def start_navigation(self, system: str):
         self.close_navigation()
-        
-        self.nav_string = system
         
         # start dummy
         if self.config.get('window', 'use_dummy') == 'True':
             self.create_dummy()
         
         # start process
+        process = NavProcess()
+        
         if system == 'standard':
-            self.nav_process = mp.Process(target=self.start_thread, args=(StandardNavSystem,))
+            self.nav_process = mp.Process(target=process.start_thread, args=(StandardNavSystem,))
         elif system == 'gamepad':
-            self.nav_process = mp.Process(target=self.start_thread, args=(GamepadSystem,))
+            self.nav_process = mp.Process(target=process.start_thread, args=(GamepadSystem,))
         
         self.nav_process.start()
         self.nav_process.join()
@@ -79,7 +107,7 @@ class Api:
         if self.config.get('window', 'use_dummy') == 'True':
             self.destroy_dummy()
         
-        if self.nav_process:
+        if self.nav_process != None:
             # terminate process
             self.nav_process.terminate()
             self.nav_process.join()
