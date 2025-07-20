@@ -51,14 +51,22 @@ function modify_config_from_select(section, option, select) {
     modify_config(section, option, select.value);
 }
 
+function modify_config_from_check(section, option, check) {
+    if (check.checked) {
+        modify_config(section, option, 'True');
+    } else {
+        modify_config(section, option, 'False');
+    }
+}
+
 function modify_config(section, option, value) {
-    pywebview.api.gamepad_set_config(section, option, value);
+    pywebview.api.set_config(section, option, value);
 }
 
 async function create_bindings(id) {
     async function create_dropdown(title, button) {
         var html = `
-            ${title}: <select onchange="modify_config_from_select('bindings', '${button}', this)">
+            ${title}: <select onchange="modify_config_from_select('gamepad.bindings', '${button}', this)">
                 <option>Unbound</option>
                 <option>Left Thumb</option>
                 <option>Left Pointer</option>
@@ -81,7 +89,7 @@ async function create_bindings(id) {
             </select>
         `;
         
-        await pywebview.api.gamepad_get_config(`bindings`, button).then(function(response) {
+        await pywebview.api.get_config(`gamepad.bindings`, button).then(function(response) {
             html = html.replace(`<option>${response.message}<`, `<option selected>${response.message}<`);
         });
 
@@ -121,22 +129,4 @@ async function create_bindings(id) {
             ${await create_dropdown('Right Trigger',        'r_trigger')}<br/>
         `
     }
-
-    // if (handedness === 'left') {
-    //     root.innerHTML = `
-    //         ${await create_dropdown('Thumb',   'button1')}<br/>
-    //         ${await create_dropdown('Pointer', 'button2')}<br/>
-    //         ${await create_dropdown('Middle',  'button3')}<br/>
-    //         ${await create_dropdown('Ring',    'button4')}<br/>
-    //         ${await create_dropdown('Pinky',   'button5')}<br/>
-    //     `
-    // } else {
-    //     root.innerHTML = `
-    //         ${await create_dropdown('Thumb',   'button1')}<br/>
-    //         ${await create_dropdown('Pointer', 'button2')}<br/>
-    //         ${await create_dropdown('Middle',  'button3')}<br/>
-    //         ${await create_dropdown('Ring',    'button4')}<br/>
-    //         ${await create_dropdown('Pinky',   'button5')}<br/>
-    //     `
-    // }
 }

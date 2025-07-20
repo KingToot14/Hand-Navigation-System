@@ -4,7 +4,7 @@ import re
 import vgamepad
 from vgamepad import XUSB_BUTTON
 
-from hand_nav.util import gamepad_config
+from hand_nav.util import main_config
 from hand_nav.camera_manager import CameraManager
 from hand_nav.hands import Hand, HandPair
 
@@ -69,7 +69,7 @@ class HandGamepad(Hand):
             self.button5 = config.get('button5')
     
     def load_config(self) -> None:
-        config: dict = gamepad_config()
+        config: dict = main_config()
         
         mapping: dict = {
             'a_button':      GamepadButton(self.gamepad, XUSB_BUTTON.XUSB_GAMEPAD_A),
