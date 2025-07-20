@@ -101,7 +101,7 @@ async function create_bindings(id) {
                 <option>Right Down Movement</option>
                 <option>Right Left Movement</option>
                 <option>Right Right Movement</option>
-            </select> ${title}
+            </select> <label><b>${title}</b></label>
         `;
         
         await pywebview.api.get_config(`gamepad.bindings`, button).then(function(response) {
