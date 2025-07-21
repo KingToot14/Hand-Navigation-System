@@ -2,6 +2,7 @@ import time
 
 import cv2
 
+from hand_nav.util import main_config
 from hand_nav.camera_manager import CameraManager
 from hand_nav.hands import Hand, HandPair, BendState
 
@@ -13,11 +14,20 @@ class StandardNavSystem:
         keyboard = KeyController()
         mouse = MouseController()
         
+        self.config = main_config()
+        
+        # create pair
+        pair: HandPair = HandPair(
+            HandGesture(keyboard),
+            HandPointer(keyboard, mouse)
+        )
+        
+        # swap hands based on handedness
+        if self.config.get('navigation', 'handedness') == 'Left':
+            pair.swap_hands()
+        
         self.cam_manager = CameraManager(
-            pair=HandPair(
-                HandGesture(keyboard),
-                HandPointer(keyboard, mouse)
-            ),
+            pair=pair
         )
     
     def start(self):

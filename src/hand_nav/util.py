@@ -27,6 +27,10 @@ def main_default_config() -> ConfigParser:
         'minimize_window':  'True',
     }
     
+    config['navigation'] = {
+        'handedness':       'Right',
+    }
+    
     config['gamepad.bindings'] = {
         'a_button':         'Right Thumb',
         'b_button':         'Right Pointer',

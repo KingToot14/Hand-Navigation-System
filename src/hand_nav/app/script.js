@@ -10,6 +10,7 @@ async function startup() {
     create_bindings('gamepad-bindings-left');
     create_bindings('gamepad-bindings-right');
 
+    // Checkboxes
     for (const element of document.getElementsByClassName('setting_box')) {
         element.addEventListener('click', function() {
             modify_config_from_check(element.dataset.section, element.dataset.option, this);
@@ -17,6 +18,21 @@ async function startup() {
 
         await pywebview.api.get_config(element.dataset.section, element.dataset.option).then(function(response) {
             element.checked = response.message === 'True';
+        });
+    }
+
+    // Drop-down Selects
+    for (const element of document.getElementsByClassName('setting_select')) {
+        element.addEventListener('click', function() {
+            modify_config_from_select(element.dataset.section, element.dataset.option, this);
+        });
+
+        await pywebview.api.get_config(element.dataset.section, element.dataset.option).then(function(response) {
+            // Clear default selection
+            element.innerHTML = element.innerHTML.replace('<option selected>', '<option>');
+
+            // Load selection
+            element.innerHTML = element.innerHTML.replace(`<option>${response.message}<`, `<option selected>${response.message}<`);
         });
     }
 }
@@ -41,8 +57,6 @@ function start_navigation(system) {
 
         // Start navigation
         pywebview.api.start_navigation(system).then(function(response) {
-            alert(`response: ${response.message}`);
-
             if (response.message === 'ok') {
                 state = 'running';
                 document.getElementById('nav-button').textContent = "Stop Capture";
