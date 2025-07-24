@@ -1,5 +1,11 @@
+import sys
+import os
+
 import time
+
 import socket
+import select
+import argparse
 
 import mediapipe as mp
 import cv2
@@ -18,8 +24,13 @@ class Landmarker:
         self.pair = kwargs.get('pair', HandPair())
         
         # detector
+        model_path: str = 'models/hand_landmarker.task'
+        
+        if hasattr(sys, '_MEIPASS'):
+            model_path = os.path.join(sys._MEIPASS, model_path)
+        
         base_options = python.BaseOptions(
-            model_asset_path='models/hand_landmarker.task',
+            model_asset_path=model_path,
         )
 
         options = vision.HandLandmarkerOptions( base_options=base_options,
@@ -40,8 +51,11 @@ class Landmarker:
         if self.server:
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         
+            print(f'Starting server at {kwargs.get('host', '127.0.0.1')} on port {kwargs.get('port', 8040)}')
             self.sock.bind((kwargs.get('host', '127.0.0.1'), kwargs.get('port', 8040)))
             self.sock.listen(1)
+            
+            print(f' - Started')
 
             self.start_capture()
     
@@ -60,7 +74,11 @@ class Landmarker:
         # wait for connection
         conn = None
         if self.server:
-            conn, _addr = self.sock.accept()
+            print("Waiting for client connection")
+            
+            conn, addr = self.sock.accept()
+            
+            print(f" - Connected at: {addr}")
 
         # start capture
         self.start_time = time.time() * 1000
@@ -78,6 +96,7 @@ class Landmarker:
                     continue
                 
                 conn.send(self.pack_results(results).encode())
+                
             else:
                 if results:
                     self.pair.update_landmarks(results)
@@ -115,7 +134,7 @@ class Landmarker:
             retr += 'r0'
         else:
             retr += 'r1' + right
-            
+        
         return retr
     
     def handle_image(self, frame: cv2.typing.MatLike, is_bgr: bool = True) -> HandLandmarkerResult:
@@ -129,3 +148,21 @@ class Landmarker:
         self.running = False
         if self.pair:
             self.pair.close()
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    
+    # args
+    parser.add_argument(
+        "--host", help="The host address",
+        type=str, default='127.0.0.1'
+    )
+    parser.add_argument(
+        "-p", "--port", help="The port to bind to",
+        type=int, default=8040
+    )
+    
+    # parse arguemts
+    args = parser.parse_args()
+    
+    landmarker = Landmarker(host=args.host, port=args.port, server=True)

@@ -23,34 +23,43 @@ if __name__ == "__main__":
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     
     sock.connect((args.host, args.port))
+    sock.settimeout(0.5)
     
     left = Hand()
     right = Hand()
     
     running = True
     while running:
-        retr = sock.recv(1024).decode()
-        
-        # unpack
-        hands = retr.split("^")
-        
-        if hands[0][1] == '1':
-            points = hands[0].split("|")
-            landmarks = []
+        try:
+            retr = sock.recv(1024).decode()
             
-            for point in points[1:]:
-                landmarks.append(list(map(float, point.split(','))))
+            # unpack
+            hands = retr.split("^")
             
-            left.update_landmarks(landmarks)
-        
-        if hands[1][1] == '1':
-            points = hands[1].split("|")
-            landmarks = []
+            if hands[0][1] == '1':
+                points = hands[0].split("|")
+                landmarks = []
+                
+                for point in points[1:]:
+                    landmarks.append(list(map(float, point.split(','))))
+                
+                left.update_landmarks(landmarks)
             
-            for point in points[1:]:
-                landmarks.append(list(map(float, point.split(','))))
-            
-            right.update_landmarks(landmarks)
+            if hands[1][1] == '1':
+                points = hands[1].split("|")
+                landmarks = []
+                
+                for point in points[1:]:
+                    landmarks.append(list(map(float, point.split(','))))
+                
+                right.update_landmarks(landmarks)
+        except socket.timeout:
+            pass
+        except KeyboardInterrupt:
+            print("Closing client")
+            if sock:
+                sock.close()
+            break
     
     sock.close()
         

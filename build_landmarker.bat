@@ -1,0 +1,1 @@
+pyinstaller --name landmarker --onefile --add-data models/hand_landmarker.task;models ./src/hand_nav/landmarker.py
