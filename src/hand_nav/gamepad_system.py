@@ -17,22 +17,10 @@ class GamepadSystem:
                 HandGamepad(
                     gamepad,
                     True
-                    # {
-                    #     'button1': XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP,
-                    #     'button2': XUSB_BUTTON.XUSB_GAMEPAD_DPAD_DOWN,
-                    #     'button4': XUSB_BUTTON.XUSB_GAMEPAD_DPAD_LEFT,
-                    #     'button5': XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT,
-                    # }
                 ),
                 HandGamepad(
                     gamepad,
                     False
-                    # {
-                    #     'button1': XUSB_BUTTON.XUSB_GAMEPAD_A,
-                    #     'button2': XUSB_BUTTON.XUSB_GAMEPAD_B,
-                    #     'button4': XUSB_BUTTON.XUSB_GAMEPAD_X,
-                    #     'button5': XUSB_BUTTON.XUSB_GAMEPAD_Y,
-                    # }
                 )
             )
         )

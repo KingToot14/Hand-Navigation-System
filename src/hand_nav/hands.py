@@ -21,7 +21,7 @@ class Hand:
         self.landmarks = []
         
         # anchor points
-        self.anchor_movement: float = 0.05
+        self.anchor_movement: float = 0.025
         self.anchor_points: int = 3
         
         # bend speed

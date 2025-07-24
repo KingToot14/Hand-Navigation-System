@@ -34,7 +34,7 @@ if __name__ == '__main__':
             img = np.array(sct.grab(sct.monitors[1]))
             
             squares = find_squares(img)
-            cv2.drawContours( img, squares, -1, (0, 255, 0), 3 )
+            cv2.drawContours(img, squares, -1, (0, 255, 0), 3)
             
             cv2.imshow('Boxes', img)
             
