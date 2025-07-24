@@ -49,7 +49,7 @@ class Hand:
         self.width = width
         self.height = height
     
-    def update_landmarks(self, landmarks: list[NormalizedLandmark]) -> None:
+    def update_landmarks(self, landmarks: list[tuple[float, float]]) -> None:
         self.landmarks = landmarks
         
         if not landmarks:
@@ -62,7 +62,7 @@ class Hand:
         self.p3 = landmarks[17]
         
         # calculate new position (avg point)
-        self.pos = ((self.p1.x + self.p2.x + self.p3.x) / 3, (self.p1.y + self.p2.y + self.p3.y) / 3)
+        self.pos = ((self.p1[0] + self.p2[0] + self.p3[0]) / 3, (self.p1[1] + self.p2[1] + self.p3[1]) / 3)
         
         # fingertips
         self.f1 = landmarks[4]
@@ -72,7 +72,7 @@ class Hand:
         self.f5 = landmarks[20]
         
         # check if fingers are bent
-        self.threshold = get_dist(self.pos, [self.p1.x, self.p1.y])
+        self.threshold = get_dist(self.pos, [self.p1[0], self.p1[1]])
         
         threshold_weights = [
             0.75,
@@ -82,11 +82,11 @@ class Hand:
             1.0,
         ]
         
-        self.f1_bend_dist = get_dist(self.pos, [self.f1.x, self.f1.y]) / self.threshold
-        self.f2_bend_dist = get_dist(self.pos, [self.f2.x, self.f2.y]) / self.threshold
-        self.f3_bend_dist = get_dist(self.pos, [self.f3.x, self.f3.y]) / self.threshold
-        self.f4_bend_dist = get_dist(self.pos, [self.f4.x, self.f4.y]) / self.threshold
-        self.f5_bend_dist = get_dist(self.pos, [self.f5.x, self.f5.y]) / self.threshold
+        self.f1_bend_dist = get_dist(self.pos, [self.f1[0], self.f1[1]]) / self.threshold
+        self.f2_bend_dist = get_dist(self.pos, [self.f2[0], self.f2[1]]) / self.threshold
+        self.f3_bend_dist = get_dist(self.pos, [self.f3[0], self.f3[1]]) / self.threshold
+        self.f4_bend_dist = get_dist(self.pos, [self.f4[0], self.f4[1]]) / self.threshold
+        self.f5_bend_dist = get_dist(self.pos, [self.f5[0], self.f5[1]]) / self.threshold
         
         self.f1_bent = self.f1_bend_dist < threshold_weights[0]
         self.f2_bent = self.f2_bend_dist < threshold_weights[1]
@@ -103,9 +103,9 @@ class Hand:
         dx, dy = self.get_position_change(self.pos)
         
         # update point deltas
-        delta_p1 = get_dist([self.p1.x, self.p1.y], [self.last_p1.x, self.last_p1.y]) / self.threshold
-        delta_p2 = get_dist([self.p2.x, self.p2.y], [self.last_p2.x, self.last_p2.y]) / self.threshold
-        delta_p3 = get_dist([self.p3.x, self.p3.y], [self.last_p3.x, self.last_p3.y]) / self.threshold
+        delta_p1 = get_dist([self.p1[0], self.p1[1]], [self.last_p1[0], self.last_p1[1]]) / self.threshold
+        delta_p2 = get_dist([self.p2[0], self.p2[1]], [self.last_p2[0], self.last_p2[1]]) / self.threshold
+        delta_p3 = get_dist([self.p3[0], self.p3[1]], [self.last_p3[0], self.last_p3[1]]) / self.threshold
         
         # anchor points
         points: int = 0
@@ -179,20 +179,20 @@ class Hand:
             return image
         
         # palm points
-        image = draw_circle(image, self.p1.x, self.p1.y, (255, 0, 0))
-        image = draw_circle(image, self.p2.x, self.p2.y, (255, 0, 0))
-        image = draw_circle(image, self.p3.x, self.p3.y, (255, 0, 0))
+        image = draw_circle(image, self.p1[0], self.p1[1], (255, 0, 0))
+        image = draw_circle(image, self.p2[0], self.p2[1], (255, 0, 0))
+        image = draw_circle(image, self.p3[0], self.p3[1], (255, 0, 0))
         
         # center point
         if self.pos:
             image = draw_circle(image, self.pos[0], self.pos[1], (255, 0, 255))
         
         # finger tips
-        image = draw_circle(image, self.f1.x, self.f1.y, (0, 0, 255) if self.f1_bent else (0, 255, 0))
-        image = draw_circle(image, self.f2.x, self.f2.y, (0, 0, 255) if self.f2_bent else (0, 255, 0))
-        image = draw_circle(image, self.f3.x, self.f3.y, (0, 0, 255) if self.f3_bent else (0, 255, 0))
-        image = draw_circle(image, self.f4.x, self.f4.y, (0, 0, 255) if self.f4_bent else (0, 255, 0))
-        image = draw_circle(image, self.f5.x, self.f5.y, (0, 0, 255) if self.f5_bent else (0, 255, 0))
+        image = draw_circle(image, self.f1[0], self.f1[1], (0, 0, 255) if self.f1_bent else (0, 255, 0))
+        image = draw_circle(image, self.f2[0], self.f2[1], (0, 0, 255) if self.f2_bent else (0, 255, 0))
+        image = draw_circle(image, self.f3[0], self.f3[1], (0, 0, 255) if self.f3_bent else (0, 255, 0))
+        image = draw_circle(image, self.f4[0], self.f4[1], (0, 0, 255) if self.f4_bent else (0, 255, 0))
+        image = draw_circle(image, self.f5[0], self.f5[1], (0, 0, 255) if self.f5_bent else (0, 255, 0))
         
         return image
 
@@ -212,10 +212,10 @@ class HandPair:
             handedness = results.handedness[i][0]
             
             if handedness.category_name == 'Left':
-                self.left_hand.update_landmarks(results.hand_landmarks[i])
+                self.left_hand.update_landmarks([(point.x, point.y) for point in results.hand_landmarks[i]])
                 l_updated = True
             elif handedness.category_name == 'Right':
-                self.right_hand.update_landmarks(results.hand_landmarks[i])
+                self.right_hand.update_landmarks([(point.x, point.y) for point in results.hand_landmarks[i]])
                 r_updated = True
         
         if not l_updated:

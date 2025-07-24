@@ -3,7 +3,7 @@ import time
 import cv2
 
 from hand_nav.util import main_config
-from hand_nav.camera_manager import Landmarker
+from hand_nav.landmarker import Landmarker
 from hand_nav.hands import Hand, HandPair, BendState
 
 from pynput.keyboard import Key, Controller as KeyController, Listener as KeyListener
