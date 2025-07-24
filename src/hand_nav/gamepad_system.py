@@ -5,14 +5,14 @@ import vgamepad
 from vgamepad import XUSB_BUTTON
 
 from hand_nav.util import main_config
-from hand_nav.camera_manager import CameraManager
+from hand_nav.landmarker import Landmarker
 from hand_nav.hands import Hand, HandPair
 
 class GamepadSystem:
     def __init__(self):
         gamepad = vgamepad.VX360Gamepad()
         
-        self.cam_manager = CameraManager(
+        self.cam_manager = Landmarker(
             pair=HandPair(
                 HandGamepad(
                     gamepad,

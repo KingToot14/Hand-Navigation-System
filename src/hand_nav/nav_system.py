@@ -3,7 +3,7 @@ import time
 import cv2
 
 from hand_nav.util import main_config
-from hand_nav.camera_manager import CameraManager
+from hand_nav.camera_manager import Landmarker
 from hand_nav.hands import Hand, HandPair, BendState
 
 from pynput.keyboard import Key, Controller as KeyController, Listener as KeyListener
@@ -26,7 +26,7 @@ class StandardNavSystem:
         if self.config.get('navigation', 'handedness') == 'Left':
             pair.swap_hands()
         
-        self.cam_manager = CameraManager(
+        self.cam_manager = Landmarker(
             pair=pair
         )
     

@@ -23,13 +23,13 @@ async function startup() {
 
     // Drop-down Selects
     for (const element of document.getElementsByClassName('setting_select')) {
-        element.addEventListener('click', function() {
+        element.addEventListener('change', function() {
             modify_config_from_select(element.dataset.section, element.dataset.option, this);
         });
 
         await pywebview.api.get_config(element.dataset.section, element.dataset.option).then(function(response) {
             // Clear default selection
-            element.innerHTML = element.innerHTML.replace('<option selected>', '<option>');
+            element.innerHTML = element.innerHTML.replace('<option selected="">', '<option>');
 
             // Load selection
             element.innerHTML = element.innerHTML.replace(`<option>${response.message}<`, `<option selected>${response.message}<`);
