@@ -1,9 +1,11 @@
+import struct
+
 import socket
 import argparse
 
 from hands import Hand
 
-if __name__ == "__main__":
+def run():
     parser = argparse.ArgumentParser()
     
     # args
@@ -31,26 +33,35 @@ if __name__ == "__main__":
     running = True
     while running:
         try:
-            retr = sock.recv(1024).decode()
+            retr = sock.recv(1024)
+            
+            # helper method
+            bp: int = 0
+            
+            def parse(format: str):
+                nonlocal bp
+                
+                size = struct.calcsize(format)
+                out = struct.unpack(format, retr[bp:bp+size])
+                
+                bp += size
+                
+                if len(format) > 1:
+                    return out
+                return out[0]
             
             # unpack
-            hands = retr.split("^")
+            flags = parse('B')
             
-            if hands[0][1] == '1':
-                points = hands[0].split("|")
-                landmarks = []
-                
-                for point in points[1:]:
-                    landmarks.append(list(map(float, point.split(','))))
+            # left hand
+            if flags & 0b00000001:
+                landmarks = [parse('ff') for i in range(21)]
                 
                 left.update_landmarks(landmarks)
             
-            if hands[1][1] == '1':
-                points = hands[1].split("|")
-                landmarks = []
-                
-                for point in points[1:]:
-                    landmarks.append(list(map(float, point.split(','))))
+            # right hand
+            if flags & 0b00000010:
+                landmarks = [parse('ff') for i in range(21)]
                 
                 right.update_landmarks(landmarks)
         except socket.timeout:
@@ -62,4 +73,7 @@ if __name__ == "__main__":
             break
     
     sock.close()
+
+if __name__ == "__main__":
+    run()
         

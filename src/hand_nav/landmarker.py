@@ -1,5 +1,6 @@
 import sys
 import os
+import struct
 
 import time
 
@@ -95,7 +96,7 @@ class Landmarker:
                 if not results or len(results.handedness) == 0:
                     continue
                 
-                conn.send(self.pack_results(results).encode())
+                conn.send(self.pack_results(results))
                 
             else:
                 if results:
@@ -109,33 +110,27 @@ class Landmarker:
                 if cv2.waitKey(1) == ord('q'):
                     break
     
-    def pack_results(self, results: HandLandmarkerResult) -> str:
-        left = ""
-        right = ""
+    def pack_results(self, results: HandLandmarkerResult) -> bytes:
+        left = bytearray()
+        right = bytearray()
         
         for i in range(min(len(results.handedness), 2)):
             if results.handedness[i][0].category_name == 'Left':
                 for landmark in results.hand_landmarks[i]:
-                    left += f"|{landmark.x:.3f},{landmark.y:.3f}"
+                    left += struct.pack('ff', landmark.x, landmark.y)
             else:
                 for landmark in results.hand_landmarks[i]:
-                    right += f"|{landmark.x:.3f},{landmark.y:.3f}"
+                    right += struct.pack('ff', landmark.x, landmark.y)
         
-        retr = ""
+        flags = bytearray(1)
         
-        if len(left.strip()) == 0:
-            retr += 'l0'
-        else:
-            retr += 'l1' + left
+        if len(left) > 0:
+            flags[0] |= 0b00000001
         
-        retr += '^'
+        if len(right) > 0:
+            flags[0] |= 0b00000010
         
-        if len(right.strip()) == 0:
-            retr += 'r0'
-        else:
-            retr += 'r1' + right
-        
-        return retr
+        return flags + left + right
     
     def handle_image(self, frame: cv2.typing.MatLike, is_bgr: bool = True) -> HandLandmarkerResult:
         if is_bgr:
