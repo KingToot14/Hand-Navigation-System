@@ -66,7 +66,7 @@ class Landmarker:
         # server mode
         if self.server:
             # send confirmation
-            self.conn.send(b'\x04')
+            self.conn.send(bytearray(b'\x04') + struct.pack('I', os.getpid()))
             
             self.start_capture()
     
@@ -104,7 +104,7 @@ class Landmarker:
                     print("\nReconnecting with new client")
                     
                     self.conn = self.wait_for_conn()
-                    self.conn.send(b'\x04')
+                    self.conn.send(bytearray(b'\x04') + struct.pack('I', os.getpid()))
                     
                     print(" - Connected!")
                 
