@@ -24,6 +24,23 @@ class Landmarker:
         # hand pair
         self.pair = kwargs.get('pair', HandPair())
         
+        # server
+        self.server = kwargs.get('server', False)
+
+        if self.server:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
+            print(f'Starting server at {kwargs.get('host', '127.0.0.1')} on port {kwargs.get('port', 8040)}')
+            self.sock.bind((kwargs.get('host', '127.0.0.1'), kwargs.get('port', 8040)))
+            self.sock.settimeout(1.0)
+            
+            self.sock.listen(5)
+            
+            print("Waiting for client")
+            self.conn = self.wait_for_conn()
+            
+            print(" - Client connected")
+        
         # detector
         model_path: str = 'models/hand_landmarker.task'
         
@@ -46,18 +63,8 @@ class Landmarker:
         
         self.start_time = 0
         
-        # server mode
-        self.server = kwargs.get('server', False)
-        
+        # server mode        
         if self.server:
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
-            print(f'Starting server at {kwargs.get('host', '127.0.0.1')} on port {kwargs.get('port', 8040)}')
-            self.sock.bind((kwargs.get('host', '127.0.0.1'), kwargs.get('port', 8040)))
-            self.sock.listen(1)
-            
-            print(f' - Started')
-
             self.start_capture()
     
     def start_capture(self, cap: cv2.VideoCapture = None):
@@ -71,15 +78,6 @@ class Landmarker:
         
         if self.pair:
             self.pair.set_capture_size(self.width, self.height)
-
-        # wait for connection
-        conn = None
-        if self.server:
-            print("Waiting for client connection")
-            
-            conn, addr = self.sock.accept()
-            
-            print(f" - Connected at: {addr}")
 
         # start capture
         self.start_time = time.time() * 1000
@@ -96,7 +94,15 @@ class Landmarker:
                 if not results or len(results.handedness) == 0:
                     continue
                 
-                conn.send(self.pack_results(results))
+                try:
+                    self.conn.sendall(self.pack_results(results))
+                except Exception as exc:
+                    print(exc)
+                    print("\nReconnecting with new client")
+                    
+                    self.conn = self.wait_for_conn()
+                    
+                    print(" - Connected!")
                 
             else:
                 if results:
@@ -131,6 +137,14 @@ class Landmarker:
             flags[0] |= 0b00000010
         
         return flags + left + right
+    
+    def wait_for_conn(self) -> socket.socket:
+        while True:
+            try:
+                conn, _addr = self.sock.accept()
+                return conn
+            except socket.timeout:
+                pass
     
     def handle_image(self, frame: cv2.typing.MatLike, is_bgr: bool = True) -> HandLandmarkerResult:
         if is_bgr:

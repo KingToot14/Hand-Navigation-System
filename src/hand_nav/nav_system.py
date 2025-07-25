@@ -29,7 +29,8 @@ class StandardNavSystem:
             pair.swap_hands()
         
         self.cam_manager = Landmarker(
-            pair=pair
+            pair=pair,
+            show_capture=True
         )
     
     def start(self):

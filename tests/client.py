@@ -23,9 +23,9 @@ def run():
     
     # create socket
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.settimeout(0.5)
     
     sock.connect((args.host, args.port))
-    sock.settimeout(0.5)
     
     left = Hand()
     right = Hand()
@@ -34,6 +34,10 @@ def run():
     while running:
         try:
             retr = sock.recv(1024)
+            
+            if len(retr) == 0:
+                print("Connection closed")
+                break
             
             # helper method
             bp: int = 0
