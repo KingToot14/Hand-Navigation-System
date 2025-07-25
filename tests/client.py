@@ -57,6 +57,11 @@ def run():
             # unpack
             flags = parse('B')
             
+            # ok check
+            if flags & 0b00000100:
+                print("Detection ready")
+                continue
+            
             # left hand
             if flags & 0b00000001:
                 landmarks = [parse('ff') for i in range(21)]

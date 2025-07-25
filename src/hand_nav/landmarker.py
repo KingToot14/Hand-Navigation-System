@@ -63,8 +63,11 @@ class Landmarker:
         
         self.start_time = 0
         
-        # server mode        
+        # server mode
         if self.server:
+            # send confirmation
+            self.conn.send(b'\x04')
+            
             self.start_capture()
     
     def start_capture(self, cap: cv2.VideoCapture = None):
@@ -101,6 +104,7 @@ class Landmarker:
                     print("\nReconnecting with new client")
                     
                     self.conn = self.wait_for_conn()
+                    self.conn.send(b'\x04')
                     
                     print(" - Connected!")
                 
